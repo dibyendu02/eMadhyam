@@ -24,13 +24,15 @@ export interface ProductCardProps {
 export interface Product {
   id: string;
   name: string;
+  shortDescription?: string;
+  description?: string;
+  rating: number;
   price: number;
   originalPrice?: number;
   discountPercentage?: number;
-  rating: number;
-  reviews?: number;
-  imageUrl: string;
+  sizeRanzes?: string[];
   inStock: boolean;
+  reviews?: number;
+  imageUrls?: string[];
   category: string;
-  description?: string;
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import Button from "../button/Button";
+import AppIcons from "../../../../public/icons/appIcons";
 
 const Navbar = () => {
   const handleClick = () => {
@@ -11,7 +12,7 @@ const Navbar = () => {
       <Image src="/logo.png" alt="logo" width={100} height={100} />
       <div className="flex items-center gap-5">
         <Image
-          src="icons/cart.svg"
+          src={AppIcons.cartIcon}
           alt="cart"
           className="w-6 h-6 "
           height={2}
@@ -19,14 +20,14 @@ const Navbar = () => {
         />
 
         <Image
-          src="icons/favourite.svg"
+          src={AppIcons.favouriteIcon}
           alt="cart"
           className="w-6 h-6"
           height={2}
           width={2}
         />
         <Image
-          src="icons/profile.svg"
+          src={AppIcons.profileIcon}
           alt="cart"
           className="w-6 h-6"
           height={2}

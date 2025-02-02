@@ -100,10 +100,21 @@ const TrendingAndBestSellers: React.FC = () => {
                 }}
               >
                 <ProductCard
-                  {...product}
-                  className="h-full bg-white hover:scale-[1.02] shadow-sm hover:shadow-md
-                    transition-all duration-300"
-                  onAddToCart={() => console.log(`Added ${product.id} to cart`)}
+                  key={product.id}
+                  name={product.name}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  discountPercentage={product.discountPercentage}
+                  rating={product.rating}
+                  reviews={product.reviews}
+                  imageUrl={
+                    product.imageUrls
+                      ? product.imageUrls[0]
+                      : "/placeholder.jpg"
+                  }
+                  onAddToCart={() =>
+                    console.log(`Added ${product.name} to cart`)
+                  }
                 />
               </div>
             ))}
