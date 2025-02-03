@@ -7,24 +7,34 @@ import TabbedInterface from "./components/TabSection";
 import Footer from "@/components/footer/Footer";
 import RelatedProducts from "./components/RelatedProducts";
 import { dummyProductData } from "@/app/dummydata";
+import { useParams } from "next/navigation";
 
-const page = () => {
+const ProductPage = () => {
+  const params = useParams();
+  console.log(params);
+  const productId = params.id as string;
+
+  const productData = dummyProductData.find(
+    (product) => product.id === productId
+  );
+
+  const relatedProducts = dummyProductData
+    .filter((product) => product.plantType === productData?.plantType)
+    .filter((product) => product.id !== productId);
+
   return (
     <div className=" bg-white ">
       <Navbar />
       <SubHeader />
-      {/* <ProductSection
-        title="Custom Title"
-        price={150}
-        rating={4.5}
-        reviewCount={100}
-      /> */}
-      <ProductSection />
+
+      <ProductSection productData={productData} />
       <TabbedInterface />
-      <RelatedProducts products={dummyProductData} />
+      {relatedProducts.length > 0 && (
+        <RelatedProducts products={relatedProducts} />
+      )}
       <Footer />
     </div>
   );
 };
 
-export default page;
+export default ProductPage;

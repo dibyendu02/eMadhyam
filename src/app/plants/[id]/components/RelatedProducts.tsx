@@ -26,15 +26,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
         {products.map((product) => (
           <ProductCard
             key={product.id}
-            name={product.name}
-            price={product.price}
-            originalPrice={product.originalPrice}
-            discountPercentage={product.discountPercentage}
-            rating={product.rating}
-            reviews={product.reviews}
-            imageUrl={
-              product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"
-            }
+            product={product}
             onAddToCart={() => console.log(`Added ${product.name} to cart`)}
           />
         ))}

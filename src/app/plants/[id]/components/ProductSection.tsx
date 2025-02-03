@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Star, Check } from "lucide-react";
 import { dummyProductData } from "@/app/dummydata";
+import { Product } from "@/commons/types/product";
 
-const productData = dummyProductData[0]; // Use the first product for now
-
-const ProductPage: React.FC = () => {
+const ProductSection: React.FC<{ productData: Product | undefined }> = ({
+  productData,
+}) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium");
   const [pinCode, setPinCode] = useState("");
 
-  return (
+  return productData ? (
     <div className="max-w-6xl mx-auto p-4 bg-white">
       <div className="text-sm text-gray-600 mb-4">
         Home / {productData.category} / {productData.name}
@@ -158,7 +159,17 @@ const ProductPage: React.FC = () => {
         </div>
       </div>
     </div>
+  ) : (
+    <div className="text-center py-12">
+      <h2 className="text-2xl font-semibold text-gray-900">
+        Product not found
+      </h2>
+      <p className="mt-2 text-gray-500">
+        The product you are looking for may have been removed or is no longer
+        available.
+      </p>
+    </div>
   );
 };
 
-export default ProductPage;
+export default ProductSection;

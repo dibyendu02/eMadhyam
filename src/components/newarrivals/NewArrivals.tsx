@@ -12,6 +12,10 @@ const NewArrivals: React.FC<NewArrivalsProps> = ({
   products,
   className = "",
 }) => {
+  const handleAddToCart = (productId: string) => {
+    console.log("Adding to cart:", productId);
+  };
+
   return (
     <section className={`w-full max-w-7xl mx-auto px-4 py-12 ${className}`}>
       {/* Section Header */}
@@ -24,20 +28,12 @@ const NewArrivals: React.FC<NewArrivalsProps> = ({
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
           <ProductCard
+            product={product}
             key={product.id}
-            name={product.name}
-            price={product.price}
-            originalPrice={product.originalPrice}
-            discountPercentage={product.discountPercentage}
-            rating={product.rating}
-            reviews={product.reviews}
-            imageUrl={
-              product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"
-            }
-            onAddToCart={() => console.log(`Added ${product.name} to cart`)}
+            onAddToCart={() => handleAddToCart(product.id)}
           />
         ))}
       </div>

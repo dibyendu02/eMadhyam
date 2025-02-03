@@ -1,42 +1,46 @@
 // ProductCard.tsx
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { ProductCardProps } from "@/commons/types/product";
+import { useRouter } from "next/navigation";
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  name,
-  price,
-  originalPrice,
-  discountPercentage,
-  rating,
-  reviews,
-  imageUrl,
+  product,
   onAddToCart,
   className = "",
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  // const navigate = useNavigate();
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    router.push(`/plants/${product.id}`);
+  };
 
   return (
     <div
-      className={`group relative w-full bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
+      className={`group relative w-full bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleNavigate}
+      role="button"
     >
       <div className="p-4">
         {/* Discount Badge */}
-        {discountPercentage && (
+        {product.discountPercentage && (
           <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-            {discountPercentage}% off
+            {product.discountPercentage}% off
           </div>
         )}
 
         {/* Product Image Container */}
-        <div className="relative w-full h-64 mb-4 overflow-hidden rounded-lg">
+        <div className="relative w-full h-24 md:h-64 mb-3 overflow-hidden rounded-lg">
           <Image
-            src={imageUrl}
-            alt={name}
+            src={product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"}
+            alt={product.name}
             fill
             className={`object-cover transform transition-transform duration-500 ${
               isHovered ? "scale-110" : "scale-100"
@@ -52,33 +56,38 @@ const ProductCard: React.FC<ProductCardProps> = ({
             isHovered ? "opacity-90" : "opacity-100"
           }`}
         >
-          <h3 className="text-gray-800 font-medium text-lg mb-2">{name}</h3>
+          <h3 className="text-gray-800 font-medium text-lg mb-1">
+            {product.name}
+          </h3>
 
           {/* Price Section */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-gray-900 font-bold text-xl">₹{price}</span>
-            {originalPrice && (
+          <div className="flex  items-center gap-2 mb-1">
+            <span className="text-gray-900 font-bold text-xl">
+              ₹{product.price}
+            </span>
+            {product.originalPrice && (
               <span className="text-gray-400 line-through text-sm">
-                ₹{originalPrice}
+                ₹{product.originalPrice}
               </span>
             )}
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-4">
+          <div className="flex items-center gap-1 mb-2">
             {[...Array(5)].map((_, index) => (
               <span
                 key={index}
-                className={`text-lg ${
-                  index < rating ? "text-yellow-400" : "text-gray-300"
+                className={`text-sm md:text-lg ${
+                  index < product.rating ? "text-yellow-400" : "text-gray-300"
                 }`}
               >
                 ★
               </span>
             ))}
-            {reviews && (
+
+            {product.reviews && (
               <span className="text-gray-500 text-sm ml-2">
-                ({reviews} reviews)
+                ({product.reviews})
               </span>
             )}
           </div>

@@ -17,7 +17,11 @@ const App: React.FC = () => {
       <SubHeader />
       <HeroSection />
       <CollectionsGrid collections={collections} />
-      <NewArrivals products={dummyProductData} />
+      <NewArrivals
+        products={dummyProductData
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+          .slice(0, 8)}
+      />
       <SaleBanner />
       <TrendingAndBestSellers />
       <Footer />
