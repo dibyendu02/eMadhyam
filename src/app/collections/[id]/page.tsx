@@ -9,7 +9,6 @@ import ProductFilters from "./components/ProductFilters";
 import ProductGrid from "./components/ProductGrid";
 import { dummyProductData } from "@/app/dummydata";
 import { PriceRange } from "@/commons/constants";
-import { Filter } from "lucide-react";
 import MobileFilterDrawer from "./components/MobileFilterDrawer";
 
 export interface FilterState {

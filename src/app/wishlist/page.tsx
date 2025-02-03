@@ -5,7 +5,7 @@ import ProductCard from "@/commons/components/productcard/ProductCard";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
 import { useAppSelector } from "@/store/hooks";
-import { Filter, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 

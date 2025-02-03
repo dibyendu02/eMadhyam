@@ -88,9 +88,7 @@ const ReviewFilters: React.FC<ReviewFiltersProps> = ({
 
 const TabContent: React.FC<TabContentProps> = ({ content, isActive }) => {
   if (!isActive) return null;
-  return (
-    <div className="p-6 bg-white rounded-b-lg ">{content}</div>
-  );
+  return <div className="p-6 bg-white rounded-b-lg ">{content}</div>;
 };
 
 const TabbedInterface: React.FC = () => {
@@ -147,7 +145,7 @@ const TabbedInterface: React.FC = () => {
     description: (
       <div className="text-gray-900">
         <p className="mb-4">
-          The Lucky Bamboo plant is the perfect gift for a houseplant. It's
+          The Lucky Bamboo plant is the perfect gift for a houseplant. It&apos;s
           considered auspicious in Feng Shui and Vastu Shastra.
         </p>
 

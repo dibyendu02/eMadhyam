@@ -2,7 +2,6 @@
 
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
-import { Product } from "@/commons/types/product";
 import Footer from "@/components/footer/Footer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { removeFromCart, updateQuantity } from "@/store/slices/cartSlice";
@@ -102,7 +101,7 @@ const CartPage = () => {
                               </div>
                               <button
                                 onClick={() => handleRemoveItem(item.id)}
-                                className="text-gray-400 hover:text-red-700 text-red-500"
+                                className="text-gray-400 hover:text-red-700 "
                               >
                                 <Trash2 className="w-5 h-5" />
                               </button>
@@ -176,7 +175,7 @@ const CartPage = () => {
                         <span>Total Amount</span>
                         <span>₹{totalAmount}</span>
                       </div>
-                      <p className="text-green-600 text-sm text-gray-500 mt-2">
+                      <p className=" text-sm text-gray-500 mt-2">
                         You will save ₹{totalDiscount} on this order
                       </p>
                     </div>

@@ -46,7 +46,9 @@ const SignIn: React.FC = () => {
                 Forgot Password?
               </Link>
               <div className="flex items-center">
-                <span className="text-gray-500">Don't have an account?</span>
+                <span className="text-gray-500">
+                  Don&apos;t have an account?
+                </span>
                 <Link
                   href="/auth/signup"
                   className="ml-1 text-green-600 hover:text-green-500"
@@ -73,7 +75,6 @@ const SignIn: React.FC = () => {
       </div>
     </div>
   );
-}
-
+};
 
 export default SignIn;

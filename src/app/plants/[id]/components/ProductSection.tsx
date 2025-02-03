@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Star, Check } from "lucide-react";
-import { dummyProductData } from "@/app/dummydata";
 import { Product } from "@/commons/types/product";
 import Link from "next/link";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -14,7 +13,7 @@ const ProductSection: React.FC<{ productData: Product }> = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium");
-  const [pinCode, setPinCode] = useState("");
+  // const [pinCode, setPinCode] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -142,7 +141,7 @@ const ProductSection: React.FC<{ productData: Product }> = ({
               ₹{productData.originalPrice}
             </span>
             <span className="text-green-600 font-semibold text-xl">
-              ₹{productData.originalPrice }
+              ₹{productData.originalPrice}
             </span>
             <span className="text-red-500">
               ({productData.discountPercentage}% off)
