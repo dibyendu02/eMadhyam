@@ -57,7 +57,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
           <div className="flex-1 overflow-y-auto">
             {/* Profile Section */}
             <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-4" onClick={()=> router.push(`/profile`)}> 
                 <Image
                   src={AppIcons.profileIcon}
                   alt="profile"

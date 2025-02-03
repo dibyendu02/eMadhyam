@@ -2,19 +2,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function SignUp() {
+const SignUp = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50  px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl w-full flex gap-8">
         {/* Form Section */}
-        <div className="w-1/2 space-y-8">
-          <div>
+        <div className="w-full md:w-1/2 space-y-8 flex flex-col items-center justify-center">
+          <div className="flex flex-col gap-2  items-center justify-between ">
+
             <h2 className="text-4xl font-medium text-gray-900">Get Started</h2>
             <p className="mt-2 text-sm text-gray-600">
               Sign up to access all data
             </p>
           </div>
-          <form className="mt-8 space-y-6">
+          <form className="w-full mt-8 space-y-6">
             <div className="space-y-4">
               <div>
                 <input
@@ -62,10 +63,10 @@ export default function SignUp() {
         </div>
 
         {/* Image Section */}
-        <div className="w-1/2">
-          <div className="relative h-full w-full">
+        <div className="hidden md:flex w-1/2 h-screen py-24">
+          <div className="relative w-full h-full">
             <Image
-              src="/images/plant1.png"
+              src="/images/auth_page_image.png"
               alt="Decorative plant"
               layout="fill"
               objectFit="cover"
@@ -77,3 +78,5 @@ export default function SignUp() {
     </div>
   );
 }
+
+export default SignUp;

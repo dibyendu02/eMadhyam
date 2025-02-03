@@ -81,7 +81,7 @@ const Navbar = () => {
                 </span>
               )}
             </div>
-            <div className="relative cursor-pointer">
+            <div className="relative cursor-pointer" onClick={()=> router.push(`/profile`)}>
               <Image
                 src={AppIcons.profileIcon}
                 alt="profile"

@@ -35,7 +35,7 @@ const WishlistPage = () => {
     <div className=" flex flex-col bg-white ">
       <Navbar />
       <SubHeader />
-      <div className="bg-white border-b border-gray-200 mt-16 md:mt-0">
+      <div className="bg-white border-b border-gray-200 mt-16 md:mt-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
           {/* Breadcrumb */}
           <nav className="flex text-sm text-gray-500 mb-4">

@@ -18,7 +18,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
   setFilterDrawerOpen,
 }) => {
   return (
-    <div className="bg-white border-b border-gray-200 mt-16">
+    <div className="bg-white border-b border-gray-200 mt-16 md:mt-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
         {/* Breadcrumb */}
         <nav className="flex text-sm text-gray-500 mb-4">
