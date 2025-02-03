@@ -7,9 +7,6 @@ interface ProductGridProps {
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
-  const handleAddToCart = (productId: string) => {
-    console.log("Adding to cart:", productId);
-  };
 
   return (
     <div className="w-full">
@@ -26,7 +23,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
             <ProductCard
               product={product}
               key={product.id}
-              onAddToCart={() => handleAddToCart(product.id)}
+              
             />
           ))}
         </div>

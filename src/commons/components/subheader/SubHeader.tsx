@@ -13,8 +13,8 @@ const SubHeader = () => {
   ];
 
   return (
-    <nav className="bg-[#24670d] w-full py-8 px-0 hidden md:block">
-      <div className="max-w-7xl mx-8 ">
+    <nav className="bg-[#24670d] w-full py-8 mt-16 px-0 hidden md:block">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 ">
         <ul className="flex items-center justify-start gap-12 flex-wrap">
           {menuItems.map((item) => (
             <li key={item.id}>

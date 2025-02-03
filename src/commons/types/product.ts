@@ -10,8 +10,7 @@ import {
 
 export interface ProductCardProps {
   product: Product;
-  /** Callback function when add to cart is clicked */
-  onAddToCart: () => void;
+
   /** Optional className for additional styling */
   className?: string;
 }
@@ -37,4 +36,9 @@ export interface Product {
   isBestSeller: boolean;
   isTrending: boolean;
   createdAt: Date;
+}
+
+
+export interface CartItem extends Product {
+  quantity: number;
 }

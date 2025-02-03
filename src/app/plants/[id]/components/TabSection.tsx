@@ -1,15 +1,49 @@
 import React, { useState } from "react";
-
 import { Star, ThumbsUp, ThumbsDown } from "lucide-react";
 
-const StarRating = ({ rating, setRating, readonly = false }) => {
+interface StarRatingProps {
+  rating: number;
+  setRating?: (rating: number) => void;
+  readonly?: boolean;
+}
+
+interface ReviewFiltersProps {
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+}
+
+interface TabContentProps {
+  content: React.ReactNode;
+  isActive: boolean;
+}
+
+interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  date: string;
+  content: string;
+  likes: number;
+}
+
+interface ProductSpec {
+  label: string;
+  value: string;
+}
+
+const StarRating: React.FC<StarRatingProps> = ({
+  rating,
+  setRating,
+  readonly = false,
+}) => {
   return (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
-          onClick={() => !readonly && setRating(star)}
+          onClick={() => !readonly && setRating && setRating(star)}
           className={`${readonly ? "cursor-default" : "cursor-pointer"}`}
+          type="button"
         >
           <Star
             className={`h-5 w-5 ${
@@ -22,8 +56,15 @@ const StarRating = ({ rating, setRating, readonly = false }) => {
   );
 };
 
-const ReviewFilters = ({ activeFilter, setActiveFilter }) => {
-  const filters = ["All Reviews", "With Photo & Video", "With Description"];
+const ReviewFilters: React.FC<ReviewFiltersProps> = ({
+  activeFilter,
+  setActiveFilter,
+}) => {
+  const filters: string[] = [
+    "All Reviews",
+    "With Photo & Video",
+    "With Description",
+  ];
 
   return (
     <div className="flex gap-2 mb-4">
@@ -36,6 +77,7 @@ const ReviewFilters = ({ activeFilter, setActiveFilter }) => {
               ? "bg-green-500 text-white"
               : "border border-gray-300 hover:bg-gray-50"
           }`}
+          type="button"
         >
           {filter}
         </button>
@@ -43,29 +85,29 @@ const ReviewFilters = ({ activeFilter, setActiveFilter }) => {
     </div>
   );
 };
-const TabContent = ({ content, isActive }) => {
-  if (!isActive) return null;
 
+const TabContent: React.FC<TabContentProps> = ({ content, isActive }) => {
+  if (!isActive) return null;
   return (
-    <div className="p-6 bg-white  rounded-b-lg min-h-screen">{content}</div>
+    <div className="p-6 bg-white rounded-b-lg ">{content}</div>
   );
 };
 
-const TabbedInterface = () => {
-  const [activeTab, setActiveTab] = useState("description");
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewFilter, setReviewFilter] = useState("All Reviews");
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [reviewContent, setReviewContent] = useState("");
+const TabbedInterface: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>("description");
+  const [reviewRating, setReviewRating] = useState<number>(5);
+  const [reviewFilter, setReviewFilter] = useState<string>("All Reviews");
+  const [reviewTitle, setReviewTitle] = useState<string>("");
+  const [reviewContent, setReviewContent] = useState<string>("");
 
   const tabs = [
     { id: "description", label: "Description" },
     { id: "additional", label: "Additional Information" },
     { id: "review", label: "Review" },
     { id: "faq", label: "FAQ" },
-  ];
+  ] as const;
 
-  const productSpecs = [
+  const productSpecs: ProductSpec[] = [
     { label: "Weight", value: "85g" },
     { label: "Dimension", value: "3 x 13 cm" },
     { label: "Availability", value: "In stock" },
@@ -76,7 +118,7 @@ const TabbedInterface = () => {
     { label: "Pot Size", value: "Small" },
   ];
 
-  const reviews = [
+  const reviews: Review[] = [
     {
       id: 1,
       author: "Darrell Steward",
@@ -95,13 +137,13 @@ const TabbedInterface = () => {
     },
   ];
 
-  const handleReviewSubmit = (e) => {
+  const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({ reviewRating, reviewTitle, reviewContent });
     // Handle review submission here
   };
 
-  const content = {
+  const content: Record<string, React.ReactNode> = {
     description: (
       <div className="text-gray-900">
         <p className="mb-4">
@@ -176,11 +218,11 @@ const TabbedInterface = () => {
                     <span className="text-gray-500 text-sm">{review.date}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-1">
+                    <button type="button" className="flex items-center gap-1">
                       <ThumbsUp className="w-4 h-4" />
                       <span>{review.likes}</span>
                     </button>
-                    <button>
+                    <button type="button">
                       <ThumbsDown className="w-4 h-4" />
                     </button>
                   </div>
@@ -252,9 +294,9 @@ const TabbedInterface = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="">
-        <nav className="flex  justify-center -mb-px">
+    <div className="w-full max-w-7xl mx-auto">
+      <div>
+        <nav className="flex justify-center -mb-px">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -264,6 +306,7 @@ const TabbedInterface = () => {
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
+              type="button"
             >
               {tab.label}
             </button>

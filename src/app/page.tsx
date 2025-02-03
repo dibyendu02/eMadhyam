@@ -12,7 +12,7 @@ import CollectionsGrid from "@/components/collection/CollectionSection";
 
 const App: React.FC = () => {
   return (
-    <div className="flex flex-col items-center bg-white">
+    <div className=" bg-white">
       <Navbar />
       <SubHeader />
       <HeroSection />

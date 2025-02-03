@@ -4,7 +4,8 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import AppIcons from "../../../public/icons/appIcons";
 import Button from "./button/Button";
-
+import { useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -21,6 +22,12 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onClose,
   menuItems,
 }) => {
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const router = useRouter();
+  const handleWishListButtonClick = () => {
+    router.push(`/wishlist`);
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -60,14 +67,24 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 />
                 <span className="text-gray-700">Profile</span>
               </div>
-              <div className="flex items-center gap-3 mb-4">
-                <Image
-                  src={AppIcons.favouriteIcon}
-                  alt="wishlist"
-                  className="w-6 h-6"
-                  height={2}
-                  width={2}
-                />
+              <div
+                className="flex items-center gap-3 mb-4"
+                onClick={handleWishListButtonClick}
+              >
+                <div className="relative">
+                  <Image
+                    src={AppIcons.favouriteIcon}
+                    alt="wishlist"
+                    className="w-6 h-6"
+                    height={2}
+                    width={2}
+                  />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                      {wishlistItems.length}
+                    </span>
+                  )}
+                </div>
                 <span className="text-gray-700">Wishlist</span>
               </div>
               <Button

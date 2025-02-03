@@ -1,3 +1,5 @@
+import { Product } from "./types/product";
+
 export enum ProductType {
   Plant = "Plant",
   Flower = "Flower",
@@ -58,7 +60,6 @@ export enum PriceRange {
   nineThousandFiveHundred = 9500,
 }
 
-
 export const PriceRanges = [
   { min: PriceRange.oneHundred, max: PriceRange.fiveHundred },
   { min: PriceRange.fiveHundred, max: PriceRange.oneThousand },
@@ -71,4 +72,26 @@ export const PriceRanges = [
   { min: PriceRange.sevenThousand, max: PriceRange.sevenThousandFiveHundred },
   { min: PriceRange.eightThousand, max: PriceRange.eightThousandFiveHundred },
   { min: PriceRange.nineThousand, max: PriceRange.nineThousandFiveHundred },
-]
+];
+
+export const defaultNullProduct: Product = {
+  id: "",
+  name: "",
+  shortDescription: "",
+  price: 0,
+  originalPrice: 0,
+  discountPercentage: 0,
+  rating: 0,
+  reviews: 0,
+  imageUrls: [],
+  inStock: false,
+  category: ProductCategory.IndoorPlants,
+  season: ProductSeason.Summer,
+  color: ProductColor.LightGreen,
+  plantType: ProductPlantType.CactiAndSucculents,
+  productType: ProductType.Plant,
+  description: "",
+  isBestSeller: false,
+  isTrending: false,
+  createdAt: new Date("2024-01-10T08:45:00Z"),
+};

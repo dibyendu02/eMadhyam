@@ -8,6 +8,7 @@ import Footer from "@/components/footer/Footer";
 import RelatedProducts from "./components/RelatedProducts";
 import { dummyProductData } from "@/app/dummydata";
 import { useParams } from "next/navigation";
+import { defaultNullProduct } from "@/commons/constants";
 
 const ProductPage = () => {
   const params = useParams();
@@ -23,11 +24,12 @@ const ProductPage = () => {
     .filter((product) => product.id !== productId);
 
   return (
-    <div className=" bg-white ">
+    <div className="bg-white ">
       <Navbar />
       <SubHeader />
 
-      <ProductSection productData={productData} />
+      <ProductSection productData={productData ?? defaultNullProduct} />
+
       <TabbedInterface />
       {relatedProducts.length > 0 && (
         <RelatedProducts products={relatedProducts} />

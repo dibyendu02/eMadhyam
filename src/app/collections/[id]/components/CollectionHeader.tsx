@@ -18,7 +18,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
   setFilterDrawerOpen,
 }) => {
   return (
-    <div className="bg-white border-b border-gray-200">
+    <div className="bg-white border-b border-gray-200 mt-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
         {/* Breadcrumb */}
         <nav className="flex text-sm text-gray-500 mb-4">
@@ -26,9 +26,9 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href="/plants" className="hover:text-gray-700">
-            Plants
-          </Link>
+          {/* <Link href="/plants" className="hover:text-gray-700"> */}
+          Plants
+          {/* </Link> */}
           <span className="mx-2">/</span>
           <span className="text-gray-900">Categories</span>
         </nav>

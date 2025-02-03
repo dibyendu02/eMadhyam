@@ -1,24 +1,62 @@
 // ProductCard.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { ProductCardProps } from "@/commons/types/product";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addToCart } from "@/store/slices/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/store/slices/wishlistSlice";
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  onAddToCart,
   className = "",
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  // const navigate = useNavigate();
   const router = useRouter();
 
   const handleNavigate = () => {
     router.push(`/plants/${product.id}`);
   };
+
+  const dispatch = useAppDispatch();
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const isInWishlist = wishlistItems.some((item) => item.id === product.id);
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleAddToCart clicked");
+    e.stopPropagation();
+    console.log("Product being added:", product);
+    dispatch(addToCart(product));
+    console.log("Add to cart action dispatched");
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleWishlistToggle clicked");
+    e.stopPropagation();
+    if (isInWishlist) {
+      console.log("Removing from wishlist:", product.id);
+      dispatch(removeFromWishlist(product.id));
+    } else {
+      console.log("Adding to wishlist:", product);
+      dispatch(addToWishlist(product));
+    }
+    console.log("Wishlist action dispatched");
+  };
+
+  // Add this near the top of your component
+  useEffect(() => {
+    console.log("Current wishlist items:", wishlistItems);
+  }, [wishlistItems]);
+
+  const cartItems = useAppSelector((state) => state.cart.items);
+  useEffect(() => {
+    console.log("Current cart items:", cartItems);
+  }, [cartItems]);
 
   return (
     <div
@@ -26,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleNavigate}
-      role="button"
+      // role="button"
     >
       <div className="p-4">
         {/* Discount Badge */}
@@ -95,21 +133,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Actions */}
           <div className="flex items-center gap-3">
             <button
-              onClick={onAddToCart}
+              onClick={handleAddToCart}
               className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors"
             >
               Add to cart
             </button>
             <button
-              onClick={() => setIsLiked(!isLiked)}
               className={`p-2.5 rounded-lg transition-all duration-300 ${
-                isLiked ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-100"
+                isInWishlist
+                  ? "bg-red-50 hover:bg-red-100"
+                  : "hover:bg-gray-100"
               }`}
               aria-label="Add to wishlist"
+              onClick={handleWishlistToggle}
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${
-                  isLiked
+                  isInWishlist
                     ? "text-red-500 fill-red-500"
                     : "text-gray-600 hover:text-gray-800"
                 }`}
@@ -118,13 +158,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Hover Overlay */}
-      <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 rounded-xl ${
-          isHovered ? "opacity-5" : "opacity-0"
-        }`}
-      />
     </div>
   );
 };

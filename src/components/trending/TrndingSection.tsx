@@ -94,7 +94,7 @@ const TrendingAndBestSellers: React.FC = () => {
           {/* Products Grid with Animation */}
           <div
             key={activeTab}
-            className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4"
           >
             {currentProducts.map((product, index) => (
               <div
@@ -106,13 +106,7 @@ const TrendingAndBestSellers: React.FC = () => {
                   }ms forwards`,
                 }}
               >
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={() =>
-                    console.log(`Added ${product.name} to cart`)
-                  }
-                />
+                <ProductCard key={product.id} product={product} />
               </div>
             ))}
           </div>
