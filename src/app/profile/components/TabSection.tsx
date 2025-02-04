@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ProfileForm } from "./ProfileForm";
 import { AddressSection } from "./AddressSection";
 import { PasswordSection } from "./PasswordSection";
-import { TabSectionProps } from "@/commons/types/profile";
+import { IUser, TabSectionProps } from "@/commons/types/profile";
 import { User, MapPin, Lock } from "lucide-react";
 
 type TabId = "profile" | "address" | "password";
@@ -25,7 +25,7 @@ export const TabSection: React.FC<TabSectionProps> = ({ user }) => {
     },
   ];
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Partial<IUser>) => {
     // Implement your submit logic here
     console.log("Form submitted:", data);
   };
