@@ -1,7 +1,8 @@
-import React from "react";
+// src/app/blog/page.tsx
+"use client";
 
-const page = () => {
+const Page = () => {
   return <div>Blog</div>;
 };
 
-export default page;
+export default Page;

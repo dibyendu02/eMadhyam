@@ -68,7 +68,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onImageUploa
                 />
             </div>
             <div>
-                <h2 className="text-xl font-semibold">{user.name}</h2>
+                <h2 className="text-xl font-semibold">{user.firstName} {user.lastName}</h2>
                 <p className="text-green-100">{user.email}</p>
             </div>
         </div>

@@ -58,7 +58,7 @@ export const TabSection: React.FC<TabSectionProps> = ({ user }) => {
         )}
         {activeTab === "address" && (
           <AddressSection
-            addresses={user.addresses}
+            addresses={user.address}
             onAddAddress={async (address) =>
               console.log("Add address:", address)
             }

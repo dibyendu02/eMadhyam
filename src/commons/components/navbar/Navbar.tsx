@@ -11,6 +11,9 @@ import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
+  const currentUser = useAppSelector((state) => state.user.user);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+
   const handleWishListButtonClick = () => {
     router.push(`/wishlist`);
   };
@@ -81,23 +84,32 @@ const Navbar = () => {
                 </span>
               )}
             </div>
-            <div className="relative cursor-pointer" onClick={()=> router.push(`/profile`)}>
+            <div
+              className="relative cursor-pointer"
+              onClick={() => router.push(`/profile`)}
+            >
               <Image
-                src={AppIcons.profileIcon}
+                src={
+                  currentUser.imageUrl != ""
+                    ? currentUser.imageUrl
+                    : AppIcons.profileIcon
+                }
                 alt="profile"
                 className="w-6 h-6 "
                 height={2}
                 width={2}
               />
             </div>
-            <Button
-              isSolid={true}
-              title="Login"
-              onClick={() => {
-                router.push(`/auth/signin`);
-              }}
-              color="primary"
-            />
+            {!isAuthenticated && (
+              <Button
+                isSolid={true}
+                title="Login"
+                onClick={() => {
+                  router.push(`/auth/signin`);
+                }}
+                color="primary"
+              />
+            )}
           </div>
         </div>
         {/* Mobile Drawer */}

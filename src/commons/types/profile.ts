@@ -1,5 +1,7 @@
 // src/types/profile.ts
 
+import { Product } from "./product";
+
 export interface IAddress {
     type: 'Home' | 'Office';
     street: string;
@@ -10,14 +12,17 @@ export interface IAddress {
   }
   
   export interface IUser {
-    name: string;
+    _id: string;
     email: string;
     firstName: string;
     lastName: string;
-    phone: string;
-    gender: 'male' | 'female' | 'other';
-    imageUrl?: string;
-    addresses: IAddress[];
+    phoneNumber: string;
+    gender: "male" | "female" | "other";
+    imageUrl: string;
+    address: IAddress[];
+    isAdmin: boolean;
+    cart: Product[];
+    wishlist: Product[];
   }
   
   export interface ProfileHeaderProps {

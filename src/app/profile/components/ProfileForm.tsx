@@ -53,7 +53,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, onSubmit }) => {
                     <label className="block text-sm font-medium text-gray-700">Contact</label>
                     <input
                         type="tel"
-                        defaultValue={user.phone}
+                        defaultValue={user.phoneNumber}
                         className="w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
                     />
                 </div>

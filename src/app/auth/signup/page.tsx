@@ -1,4 +1,5 @@
-// src/app/auth/signup/page.tsx
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,7 +10,6 @@ const SignUp = () => {
         {/* Form Section */}
         <div className="w-full md:w-1/2 space-y-8 flex flex-col items-center justify-center">
           <div className="flex flex-col gap-2  items-center justify-between ">
-
             <h2 className="text-4xl font-medium text-gray-900">Get Started</h2>
             <p className="mt-2 text-sm text-gray-600">
               Sign up to access all data
@@ -77,6 +77,6 @@ const SignUp = () => {
       </div>
     </div>
   );
-}
+};
 
 export default SignUp;
