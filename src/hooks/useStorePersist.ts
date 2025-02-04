@@ -30,40 +30,7 @@ export const useStorePersist = () => {
         }
       }
     }
-
-    // Load cart state
-    const cartData = localStorage.getItem("eMadhyam-cart");
-    if (cartData) {
-      try {
-        const cart = JSON.parse(cartData);
-        dispatch(addToCart(cart));
-      } catch (error) {
-        console.log("Error parsing cart data:", error);
-        localStorage.removeItem("eMadhyam-cart");
-      }
-    }
-
-    // Load wishlist state
-    const wishlistData = localStorage.getItem("eMadhyam-wishlist");
-    if (wishlistData) {
-      try {
-        const wishlist = JSON.parse(wishlistData);
-        dispatch(addToWishlist(wishlist));
-      } catch (error) {
-        console.log("Error parsing wishlist data:", error);
-        localStorage.removeItem("eMadhyam-wishlist");
-      }
-    }
   }, [dispatch]);
-
-  // Save state changes
-  useEffect(() => {
-    localStorage.setItem("eMadhyam-cart", JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("eMadhyam-wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
 
   useEffect(() => {
     if (user.isAuthenticated) {
