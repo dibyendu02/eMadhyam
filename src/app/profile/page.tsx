@@ -40,7 +40,7 @@ const ProfilePage = () => {
       <Navbar />
       <SubHeader />
 
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-16 md:mt-0">
         <div className="max-w-7xl mx-auto space-y-6">
           <ProfileHeader user={user} onImageUpload={handleImageUpload} />
           <TabSection user={user} />

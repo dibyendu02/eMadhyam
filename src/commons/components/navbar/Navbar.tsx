@@ -84,23 +84,25 @@ const Navbar = () => {
                 </span>
               )}
             </div>
-            <div
-              className="relative cursor-pointer"
-              onClick={() => router.push(`/profile`)}
-            >
-              <Image
-                src={
-                  currentUser.imageUrl != ""
-                    ? currentUser.imageUrl
-                    : AppIcons.profileIcon
-                }
-                alt="profile"
-                className="w-6 h-6 "
-                height={2}
-                width={2}
-              />
-            </div>
-            {!isAuthenticated && (
+
+            {isAuthenticated ? (
+              <div
+                className="relative cursor-pointer"
+                onClick={() => router.push(`/profile`)}
+              >
+                <Image
+                  src={
+                    currentUser.imageUrl != ""
+                      ? currentUser.imageUrl
+                      : AppIcons.profileIcon
+                  }
+                  alt="profile"
+                  className="w-6 h-6 "
+                  height={2}
+                  width={2}
+                />
+              </div>
+            ) : (
               <Button
                 isSolid={true}
                 title="Login"

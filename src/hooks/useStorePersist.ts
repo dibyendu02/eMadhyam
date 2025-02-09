@@ -4,13 +4,13 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginSuccess } from "@/store/slices/userSlice";
-import { addToCart } from "@/store/slices/cartSlice";
-import { addToWishlist } from "@/store/slices/wishlistSlice";
+// import { addToCart } from "@/store/slices/cartSlice";
+// import { addToWishlist } from "@/store/slices/wishlistSlice";
 
 export const useStorePersist = () => {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.cart);
-  const wishlist = useAppSelector((state) => state.wishlist);
+  // const cart = useAppSelector((state) => state.cart);
+  // const wishlist = useAppSelector((state) => state.wishlist);
   const user = useAppSelector((state) => state.user);
 
   // Load persisted state

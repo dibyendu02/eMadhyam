@@ -24,6 +24,8 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 }) => {
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const router = useRouter();
+  const currentUser = useAppSelector((state) => state.user.user);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const handleWishListButtonClick = () => {
     router.push(`/wishlist`);
   };
@@ -57,16 +59,25 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
           <div className="flex-1 overflow-y-auto">
             {/* Profile Section */}
             <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center gap-3 mb-4" onClick={()=> router.push(`/profile`)}> 
-                <Image
-                  src={AppIcons.profileIcon}
-                  alt="profile"
-                  className="w-6 h-6"
-                  height={2}
-                  width={2}
-                />
-                <span className="text-gray-700">Profile</span>
-              </div>
+              {isAuthenticated && (
+                <div
+                  className="flex items-center gap-3 mb-4"
+                  onClick={() => router.push(`/profile`)}
+                >
+                  <Image
+                    src={
+                      currentUser.imageUrl != ""
+                        ? currentUser.imageUrl
+                        : AppIcons.profileIcon
+                    }
+                    alt="profile"
+                    className="w-6 h-6 "
+                    height={2}
+                    width={2}
+                  />
+                  <span className="text-gray-700">Profile</span>
+                </div>
+              )}
               <div
                 className="flex items-center gap-3 mb-4"
                 onClick={handleWishListButtonClick}
@@ -87,13 +98,17 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 </div>
                 <span className="text-gray-700">Wishlist</span>
               </div>
-              <Button
-                isSolid={true}
-                title="Login"
-                onClick={() => {}}
-                color="primary"
-                className="w-full"
-              />
+              {!isAuthenticated && (
+                <Button
+                  isSolid={true}
+                  title="Login"
+                  onClick={() => {
+                    router.push(`/auth/signin`);
+                  }}
+                  color="primary"
+                  className="w-full"
+                />
+              )}
             </div>
 
             {/* Menu Items */}
