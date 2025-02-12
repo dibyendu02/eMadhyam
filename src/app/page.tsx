@@ -12,12 +12,16 @@ import CollectionsGrid from "@/components/collection/CollectionSection";
 
 const App: React.FC = () => {
   return (
-    <div className="flex flex-col items-center bg-white">
+    <div className=" bg-white">
       <Navbar />
       <SubHeader />
       <HeroSection />
       <CollectionsGrid collections={collections} />
-      <NewArrivals products={dummyProductData} />
+      <NewArrivals
+        products={dummyProductData
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+          .slice(0, 8)}
+      />
       <SaleBanner />
       <TrendingAndBestSellers />
       <Footer />

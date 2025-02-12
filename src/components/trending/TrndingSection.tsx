@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import ProductCard from "@/commons/components/productcard/ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { bestsellerProducts, trendingProducts } from "@/app/dummydata";
+import { dummyProductData } from "@/app/dummydata";
 
 const TrendingAndBestSellers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"trending" | "bestsellers">(
     "trending"
   );
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const trendingProducts = dummyProductData.filter(
+    (product) => product.isTrending
+  );
+  const bestsellerProducts = dummyProductData.filter(
+    (product) => product.isBestSeller
+  );
 
   const currentProducts =
     activeTab === "trending" ? trendingProducts : bestsellerProducts;
@@ -87,7 +94,7 @@ const TrendingAndBestSellers: React.FC = () => {
           {/* Products Grid with Animation */}
           <div
             key={activeTab}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4"
           >
             {currentProducts.map((product, index) => (
               <div
@@ -99,23 +106,7 @@ const TrendingAndBestSellers: React.FC = () => {
                   }ms forwards`,
                 }}
               >
-                <ProductCard
-                  key={product.id}
-                  name={product.name}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  discountPercentage={product.discountPercentage}
-                  rating={product.rating}
-                  reviews={product.reviews}
-                  imageUrl={
-                    product.imageUrls
-                      ? product.imageUrls[0]
-                      : "/placeholder.jpg"
-                  }
-                  onAddToCart={() =>
-                    console.log(`Added ${product.name} to cart`)
-                  }
-                />
+                <ProductCard key={product.id} product={product} />
               </div>
             ))}
           </div>

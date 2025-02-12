@@ -1,20 +1,69 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Star, Check } from "lucide-react";
-import { dummyProductData } from "@/app/dummydata";
+import { Product } from "@/commons/types/product";
+import Link from "next/link";
+import { addToCart } from "@/store/slices/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { defaultNullProduct } from "@/commons/constants";
+import { useRouter } from "next/navigation";
 
-const productData = dummyProductData[0]; // Use the first product for now
-
-const ProductPage: React.FC = () => {
+const ProductSection: React.FC<{ productData: Product }> = ({
+  productData,
+}) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium");
-  const [pinCode, setPinCode] = useState("");
+  // const [pinCode, setPinCode] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  return (
-    <div className="max-w-6xl mx-auto p-4 bg-white">
-      <div className="text-sm text-gray-600 mb-4">
-        Home / {productData.category} / {productData.name}
-      </div>
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const isInCart = cartItems.some((item) => item.id === productData.id);
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleAddToCart clicked");
+    e.stopPropagation();
+    if (isInCart) {
+      router.push("/cart");
+      return;
+    }
+    console.log("Product being added:", productData);
+    dispatch(addToCart(productData));
+  };
+
+  const handleBuyNowClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleBuyNowClick clicked");
+    e.stopPropagation();
+    console.log("Buy now clicked");
+    if (!isInCart) {
+      dispatch(addToCart(productData));
+    }
+    console.log("Add to cart action dispatched");
+    router.push(`/cart`);
+  };
+
+  return productData == defaultNullProduct ? (
+    <div className="text-center py-12">
+      <h2 className="text-2xl font-semibold text-gray-900">
+        Product not found
+      </h2>
+      <p className="mt-2 text-gray-500">
+        The product you are looking for may have been removed or is no longer
+        available.
+      </p>
+    </div>
+  ) : (
+    <div className="max-w-7xl mx-auto p-4 bg-white mt-16">
+      <nav className="flex text-sm text-gray-500 mb-4">
+        <Link href="/" className="hover:text-gray-700">
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-gray-900">{productData.category} </span>
+        <span className="mx-2">/</span>
+        <span className="text-gray-900">{productData.name} </span>
+      </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left column - Images */}
@@ -22,8 +71,11 @@ const ProductPage: React.FC = () => {
           {/* Main Image */}
           <div className="aspect-square bg-white rounded-lg overflow-hidden border relative">
             <Image
-              src={productData.imageUrls?.[0] || "/images/placeholder.jpg"}
-              alt={productData.name}
+              src={
+                productData.imageUrls?.[currentImageIndex] ||
+                "/images/placeholder.jpg"
+              }
+              alt={`${productData.name} - View ${currentImageIndex + 1}`}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -34,9 +86,14 @@ const ProductPage: React.FC = () => {
           <div className="flex space-x-2 overflow-x-auto">
             {(productData.imageUrls || ["/images/placeholder.jpg"]).map(
               (thumb, idx) => (
-                <div
+                <button
                   key={idx}
-                  className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border relative"
+                  onClick={() => setCurrentImageIndex(idx)}
+                  className={`w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border relative ${
+                    currentImageIndex === idx
+                      ? "border-2 border-green-600"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
                 >
                   <Image
                     src={thumb}
@@ -45,7 +102,7 @@ const ProductPage: React.FC = () => {
                     className="object-cover"
                     sizes="50px"
                   />
-                </div>
+                </button>
               )
             )}
           </div>
@@ -84,7 +141,7 @@ const ProductPage: React.FC = () => {
               ₹{productData.originalPrice}
             </span>
             <span className="text-green-600 font-semibold text-xl">
-              ₹{productData.price}
+              ₹{productData.originalPrice}
             </span>
             <span className="text-red-500">
               ({productData.discountPercentage}% off)
@@ -138,10 +195,16 @@ const ProductPage: React.FC = () => {
           </div>
 
           {/* Add to Cart and Buy Now */}
-          <button className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700">
-            Add to cart
+          <button
+            className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
+            onClick={handleAddToCart}
+          >
+            {isInCart ? "Go to Cart" : "Add to Cart"}
           </button>
-          <button className="w-full border border-gray-200 py-3 rounded text-gray-700 hover:bg-gray-50">
+          <button
+            className="w-full border border-gray-200 py-3 rounded text-gray-700 hover:bg-gray-50"
+            onClick={handleBuyNowClick}
+          >
             Buy Now
           </button>
 
@@ -161,4 +224,4 @@ const ProductPage: React.FC = () => {
   );
 };
 
-export default ProductPage;
+export default ProductSection;

@@ -1,22 +1,16 @@
 // types/product.ts
 
+import {
+  ProductCategory,
+  ProductSeason,
+  ProductColor,
+  ProductPlantType,
+  ProductType,
+} from "../constants";
+
 export interface ProductCardProps {
-  /** Name of the product */
-  name: string;
-  /** Current selling price */
-  price: number;
-  /** Original price before discount */
-  originalPrice?: number;
-  /** Discount percentage (if applicable) */
-  discountPercentage?: number;
-  /** Rating out of 5 */
-  rating: number;
-  /** Number of reviews */
-  reviews?: number;
-  /** URL of the product image */
-  imageUrl: string;
-  /** Callback function when add to cart is clicked */
-  onAddToCart: () => void;
+  product: Product;
+
   /** Optional className for additional styling */
   className?: string;
 }
@@ -34,5 +28,17 @@ export interface Product {
   inStock: boolean;
   reviews?: number;
   imageUrls?: string[];
-  category: string;
+  category: ProductCategory;
+  season: ProductSeason;
+  color: ProductColor;
+  plantType: ProductPlantType;
+  productType: ProductType;
+  isBestSeller: boolean;
+  isTrending: boolean;
+  createdAt: Date;
+}
+
+
+export interface CartItem extends Product {
+  quantity: number;
 }
