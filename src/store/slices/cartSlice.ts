@@ -44,7 +44,7 @@ const cartSlice = createSlice({
     addToCart: (state, action: PayloadAction<Product>) => {
       console.log("Adding to cart:", action.payload);
       const existingItem = state.items.find(
-        (item) => item.id === action.payload.id
+        (item) => item._id === action.payload._id
       );
 
       if (existingItem) {
@@ -60,7 +60,7 @@ const cartSlice = createSlice({
       state.totalDiscount = totals.totalDiscount;
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter((item) => item._id !== action.payload);
 
       const totals = calculateCartTotals(state.items);
       state.totalQuantity = totals.totalQuantity;
@@ -72,7 +72,7 @@ const cartSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; quantity: number }>
     ) => {
-      const item = state.items.find((item) => item.id === action.payload.id);
+      const item = state.items.find((item) => item._id === action.payload.id);
       if (item) {
         item.quantity = action.payload.quantity;
       }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Star, ThumbsUp, ThumbsDown } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 
 interface StarRatingProps {
   rating: number;
@@ -134,6 +135,8 @@ const TabbedInterface: React.FC = () => {
       likes: 82,
     },
   ];
+
+  const { currentProduct, error } = useAppSelector((state) => state.products);
 
   const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -291,7 +294,9 @@ const TabbedInterface: React.FC = () => {
     ),
   };
 
-  return (
+  return !currentProduct || error ? (
+    <></>
+  ) : (
     <div className="w-full max-w-7xl mx-auto">
       <div>
         <nav className="flex justify-center -mb-px">

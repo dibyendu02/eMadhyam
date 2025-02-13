@@ -87,7 +87,7 @@ const Navbar = () => {
 
             {isAuthenticated ? (
               <div
-                className="relative cursor-pointer"
+                className="relative cursor-pointer w-6 h-6 rounded-full overflow-hidden"
                 onClick={() => router.push(`/profile`)}
               >
                 <Image

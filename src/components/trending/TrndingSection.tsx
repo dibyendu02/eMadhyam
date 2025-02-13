@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import ProductCardLoading from "@/commons/components/productcard/components/ProductCardLoading";
 import ProductCard from "@/commons/components/productcard/ProductCard";
+import { useAppSelector } from "@/store/hooks";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { dummyProductData } from "@/app/dummydata";
+import React, { useState } from "react";
 
 const TrendingAndBestSellers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"trending" | "bestsellers">(
@@ -9,12 +10,17 @@ const TrendingAndBestSellers: React.FC = () => {
   );
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const trendingProducts = dummyProductData.filter(
-    (product) => product.isTrending
-  );
-  const bestsellerProducts = dummyProductData.filter(
-    (product) => product.isBestSeller
-  );
+  const {
+    items: products,
+    loading,
+    error,
+  } = useAppSelector((state) => state.products);
+
+  const trendingProducts = products;
+  const bestsellerProducts = products;
+
+  // const trendingProducts = products.filter((product) => product.isTrending);
+  // const bestsellerProducts = products.filter((product) => product.isBestSeller);
 
   const currentProducts =
     activeTab === "trending" ? trendingProducts : bestsellerProducts;
@@ -26,6 +32,10 @@ const TrendingAndBestSellers: React.FC = () => {
       setTimeout(() => setIsAnimating(false), 600);
     }
   };
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="w-full bg-gradient-to-b from-white to-gray-50 py-16">
@@ -92,24 +102,34 @@ const TrendingAndBestSellers: React.FC = () => {
           </button>
 
           {/* Products Grid with Animation */}
-          <div
-            key={activeTab}
-            className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4"
-          >
-            {currentProducts.map((product, index) => (
-              <div
-                key={product.id}
-                className="opacity-0"
-                style={{
-                  animation: `fadeSlideIn 0.6s ease-out ${
-                    index * 100
-                  }ms forwards`,
-                }}
-              >
-                <ProductCard key={product.id} product={product} />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
+              {new Array(4).fill(0).map((_, index) => (
+                <div key={index} className="opacity-1">
+                  <ProductCardLoading />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              key={activeTab}
+              className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4"
+            >
+              {currentProducts.map((product, index) => (
+                <div
+                  key={product._id}
+                  className="opacity-0"
+                  style={{
+                    animation: `fadeSlideIn 0.6s ease-out ${
+                      index * 100
+                    }ms forwards`,
+                  }}
+                >
+                  <ProductCard key={product._id} product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* View All Button */}

@@ -20,12 +20,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const router = useRouter();
 
   const handleNavigate = () => {
-    router.push(`/plants/${product.id}`);
+    router.push(`/plants/${product._id}`);
   };
 
   const dispatch = useAppDispatch();
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
-  const isInWishlist = wishlistItems.some((item) => item.id === product.id);
+  const isInWishlist = wishlistItems.some((item) => item._id === product._id);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log("handleAddToCart clicked");
@@ -39,8 +39,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     console.log("handleWishlistToggle clicked");
     e.stopPropagation();
     if (isInWishlist) {
-      console.log("Removing from wishlist:", product.id);
-      dispatch(removeFromWishlist(product.id));
+      console.log("Removing from wishlist:", product._id);
+      dispatch(removeFromWishlist(product._id));
     } else {
       console.log("Adding to wishlist:", product);
       dispatch(addToWishlist(product));
@@ -60,13 +60,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className={`group relative w-full bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
+      className={`group relative w-full bg-white border border-gray-200 rounded-md  md:rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleNavigate}
       // role="button"
     >
-      <div className="p-4">
+      <div className="p-2 md:p-4 flex flex-col h-[300px] md:h-[360px]">
         {/* Discount Badge */}
         {product.discountPercentage && (
           <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
@@ -75,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Product Image Container */}
-        <div className="relative w-full h-24 md:h-64 mb-3 overflow-hidden rounded-lg">
+        <div className="relative w-full h-28 md:h-48 mb-3 overflow-hidden rounded-lg">
           <Image
             src={product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"}
             alt={product.name}
@@ -90,16 +90,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Content Container - applies blur effect on hover */}
         <div
-          className={`relative transition-opacity duration-300 ${
+          className={`relative flex flex-col flex-grow transition-opacity duration-300 ${
             isHovered ? "opacity-90" : "opacity-100"
           }`}
         >
-          <h3 className="text-gray-800 font-medium text-lg mb-1">
+          <h3 className="text-gray-800 font-medium text-lg mb-1 line-clamp-2 min-h-[3.5rem]">
             {product.name}
           </h3>
 
           {/* Price Section */}
-          <div className="flex  items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 h-7">
             <span className="text-gray-900 font-bold text-xl">
               ₹{product.price}
             </span>
@@ -111,35 +111,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-2 h-6">
             {[...Array(5)].map((_, index) => (
               <span
                 key={index}
                 className={`text-sm md:text-lg ${
-                  index < product.rating ? "text-yellow-400" : "text-gray-300"
+                  index < 4 ? "text-yellow-400" : "text-gray-300"
                 }`}
               >
                 ★
               </span>
             ))}
 
-            {product.reviews && (
-              <span className="text-gray-500 text-sm ml-2">
-                ({product.reviews})
-              </span>
-            )}
+            {/* {product.reviews && ( */}
+            <span className="text-gray-500 text-sm ml-2">
+              {/* ({product.reviews}) */}2
+            </span>
+            {/*  )} */}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 mt-auto">
             <button
               onClick={handleAddToCart}
-              className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors"
+              className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors"
             >
               Add to cart
             </button>
             <button
-              className={`p-2.5 rounded-lg transition-all duration-300 ${
+              className={`p-1.5 md:p-2.5 rounded-lg transition-all duration-300 ${
                 isInWishlist
                   ? "bg-red-50 hover:bg-red-100"
                   : "hover:bg-gray-100"

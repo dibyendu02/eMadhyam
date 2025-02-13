@@ -1,27 +1,33 @@
 "use client";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
+import CollectionsGrid from "@/components/collection/CollectionSection";
+import Footer from "@/components/footer/Footer";
 import HeroSection from "@/components/herosection/HeroSection";
 import NewArrivals from "@/components/newarrivals/NewArrivals";
-import React from "react";
-import { collections, dummyProductData } from "./dummydata";
 import SaleBanner from "@/components/salebanner/SaleBanner";
 import TrendingAndBestSellers from "@/components/trending/TrndingSection";
-import Footer from "@/components/footer/Footer";
-import CollectionsGrid from "@/components/collection/CollectionSection";
+import { useAppDispatch } from "@/store/hooks";
+import { fetchProducts } from "@/store/slices/productSlice";
+import React, { useEffect } from "react";
+
+import { fetchCategories } from "@/store/slices/categorySlice";
 
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
   return (
-    <div className=" bg-white">
+    <div className="bg-white">
       <Navbar />
       <SubHeader />
       <HeroSection />
-      <CollectionsGrid collections={collections} />
-      <NewArrivals
-        products={dummyProductData
-          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-          .slice(0, 8)}
-      />
+      <CollectionsGrid />
+      <NewArrivals />
       <SaleBanner />
       <TrendingAndBestSellers />
       <Footer />

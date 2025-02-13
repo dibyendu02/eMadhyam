@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
@@ -7,9 +7,10 @@ import Footer from "@/components/footer/Footer";
 import CollectionHeader from "./components/CollectionHeader";
 import ProductFilters from "./components/ProductFilters";
 import ProductGrid from "./components/ProductGrid";
-import { dummyProductData } from "@/app/dummydata";
 import { PriceRange } from "@/commons/constants";
 import MobileFilterDrawer from "./components/MobileFilterDrawer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { clearCurrentCategory } from "@/store/slices/categorySlice";
 
 export interface FilterState {
   colors: string[];
@@ -26,6 +27,8 @@ const formatCategoryName = (slug: string) => {
     .join(" ");
 };
 
+//Bug - filters not working do not know why
+
 const CollectionPage = () => {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const params = useParams();
@@ -38,6 +41,22 @@ const CollectionPage = () => {
     priceRange: [PriceRange.zero, PriceRange.nineThousandFiveHundred],
     inStock: false,
   };
+  const dispatch = useAppDispatch();
+
+  const { items: allProducts } = useAppSelector((state) => state.products);
+  const { currentCategory } = useAppSelector((state) => state.categories);
+
+  const categoryProducts = useMemo(() => {
+    return allProducts.filter(
+      (product) => product.category._id === currentCategory?.id
+    );
+  }, [allProducts, currentCategory]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentCategory());
+    };
+  }, [dispatch]);
 
   // State for sorting and filters
   const [currentSort, setCurrentSort] = useState("name-asc");
@@ -46,28 +65,25 @@ const CollectionPage = () => {
 
   // Get filtered and sorted products
   const processedProducts = useMemo(() => {
-    // First filter by category
-    let filtered = dummyProductData.filter(
-      (product) => product.category === categorySlug
-    );
+    let filtered = [...categoryProducts];
 
     // Apply filters
     filtered = filtered.filter((product) => {
       // Color filter
       if (
         selectedFilters.colors.length > 0 &&
-        !selectedFilters.colors.includes(product.color)
+        !selectedFilters.colors.includes(product.color.name)
       ) {
         return false;
       }
 
       // Plant type filter
-      if (
-        selectedFilters.plantTypes.length > 0 &&
-        !selectedFilters.plantTypes.includes(product.plantType)
-      ) {
-        return false;
-      }
+      // if (
+      //   selectedFilters.plantTypes.length > 0 &&
+      //   !selectedFilters.plantTypes.includes(product.plantType)
+      // ) {
+      //   return false;
+      // }
 
       // Season filter
       if (
@@ -108,7 +124,7 @@ const CollectionPage = () => {
           return 0;
       }
     });
-  }, [categorySlug, selectedFilters, currentSort]);
+  }, [categorySlug, selectedFilters, currentSort, categoryProducts]);
 
   const handleClearFilters = () => {
     setSelectedFilters(defaultFilters);
