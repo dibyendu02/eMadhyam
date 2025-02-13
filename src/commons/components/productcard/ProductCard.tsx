@@ -1,42 +1,84 @@
 // ProductCard.tsx
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { ProductCardProps } from "@/commons/types/product";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addToCart } from "@/store/slices/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/store/slices/wishlistSlice";
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  name,
-  price,
-  originalPrice,
-  discountPercentage,
-  rating,
-  reviews,
-  imageUrl,
-  onAddToCart,
+  product,
   className = "",
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    router.push(`/plants/${product._id}`);
+  };
+
+  const dispatch = useAppDispatch();
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const isInWishlist = wishlistItems.some((item) => item._id === product._id);
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleAddToCart clicked");
+    e.stopPropagation();
+    console.log("Product being added:", product);
+    dispatch(addToCart(product));
+    console.log("Add to cart action dispatched");
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("handleWishlistToggle clicked");
+    e.stopPropagation();
+    if (isInWishlist) {
+      console.log("Removing from wishlist:", product._id);
+      dispatch(removeFromWishlist(product._id));
+    } else {
+      console.log("Adding to wishlist:", product);
+      dispatch(addToWishlist(product));
+    }
+    console.log("Wishlist action dispatched");
+  };
+
+  // Add this near the top of your component
+  useEffect(() => {
+    console.log("Current wishlist items:", wishlistItems);
+  }, [wishlistItems]);
+
+  const cartItems = useAppSelector((state) => state.cart.items);
+  useEffect(() => {
+    console.log("Current cart items:", cartItems);
+  }, [cartItems]);
 
   return (
     <div
-      className={`group relative w-full bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
+      className={`group relative w-full bg-white border border-gray-200 rounded-md  md:rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleNavigate}
+      // role="button"
     >
-      <div className="p-4">
+      <div className="p-2 md:p-4 flex flex-col h-[300px] md:h-[360px]">
         {/* Discount Badge */}
-        {discountPercentage && (
+        {product.discountPercentage && (
           <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-            {discountPercentage}% off
+            {product.discountPercentage}% off
           </div>
         )}
 
         {/* Product Image Container */}
-        <div className="relative w-full h-64 mb-4 overflow-hidden rounded-lg">
+        <div className="relative w-full h-28 md:h-48 mb-3 overflow-hidden rounded-lg">
           <Image
-            src={imageUrl}
-            alt={name}
+            src={product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"}
+            alt={product.name}
             fill
             className={`object-cover transform transition-transform duration-500 ${
               isHovered ? "scale-110" : "scale-100"
@@ -48,59 +90,66 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Content Container - applies blur effect on hover */}
         <div
-          className={`relative transition-opacity duration-300 ${
+          className={`relative flex flex-col flex-grow transition-opacity duration-300 ${
             isHovered ? "opacity-90" : "opacity-100"
           }`}
         >
-          <h3 className="text-gray-800 font-medium text-lg mb-2">{name}</h3>
+          <h3 className="text-gray-800 font-medium text-lg mb-1 line-clamp-2 min-h-[3.5rem]">
+            {product.name}
+          </h3>
 
           {/* Price Section */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-gray-900 font-bold text-xl">₹{price}</span>
-            {originalPrice && (
+          <div className="flex items-center gap-2 mb-1 h-7">
+            <span className="text-gray-900 font-bold text-xl">
+              ₹{product.price}
+            </span>
+            {product.originalPrice && (
               <span className="text-gray-400 line-through text-sm">
-                ₹{originalPrice}
+                ₹{product.originalPrice}
               </span>
             )}
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-4">
+          <div className="flex items-center gap-1 mb-2 h-6">
             {[...Array(5)].map((_, index) => (
               <span
                 key={index}
-                className={`text-lg ${
-                  index < rating ? "text-yellow-400" : "text-gray-300"
+                className={`text-sm md:text-lg ${
+                  index < 4 ? "text-yellow-400" : "text-gray-300"
                 }`}
               >
                 ★
               </span>
             ))}
-            {reviews && (
-              <span className="text-gray-500 text-sm ml-2">
-                ({reviews} reviews)
-              </span>
-            )}
+
+            {/* {product.reviews && ( */}
+            <span className="text-gray-500 text-sm ml-2">
+              {/* ({product.reviews}) */}2
+            </span>
+            {/*  )} */}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 mt-auto">
             <button
-              onClick={onAddToCart}
-              className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors"
+              onClick={handleAddToCart}
+              className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors"
             >
               Add to cart
             </button>
             <button
-              onClick={() => setIsLiked(!isLiked)}
-              className={`p-2.5 rounded-lg transition-all duration-300 ${
-                isLiked ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-100"
+              className={`p-1.5 md:p-2.5 rounded-lg transition-all duration-300 ${
+                isInWishlist
+                  ? "bg-red-50 hover:bg-red-100"
+                  : "hover:bg-gray-100"
               }`}
               aria-label="Add to wishlist"
+              onClick={handleWishlistToggle}
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${
-                  isLiked
+                  isInWishlist
                     ? "text-red-500 fill-red-500"
                     : "text-gray-600 hover:text-gray-800"
                 }`}
@@ -109,13 +158,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Hover Overlay */}
-      <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 rounded-xl ${
-          isHovered ? "opacity-5" : "opacity-0"
-        }`}
-      />
     </div>
   );
 };

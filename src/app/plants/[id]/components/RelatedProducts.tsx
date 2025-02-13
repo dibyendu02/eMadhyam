@@ -22,21 +22,9 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            name={product.name}
-            price={product.price}
-            originalPrice={product.originalPrice}
-            discountPercentage={product.discountPercentage}
-            rating={product.rating}
-            reviews={product.reviews}
-            imageUrl={
-              product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"
-            }
-            onAddToCart={() => console.log(`Added ${product.name} to cart`)}
-          />
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
     </section>

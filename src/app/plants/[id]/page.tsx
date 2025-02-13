@@ -1,30 +1,55 @@
 "use client";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
-import React from "react";
-import ProductSection from "./components/ProductSection";
-import TabbedInterface from "./components/TabSection";
 import Footer from "@/components/footer/Footer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  clearCurrentProduct,
+  fetchProductById,
+} from "@/store/slices/productSlice";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import ProductSection from "./components/ProductSection";
 import RelatedProducts from "./components/RelatedProducts";
-import { dummyProductData } from "@/app/dummydata";
+import TabbedInterface from "./components/TabSection";
 
-const page = () => {
+const ProductPage = () => {
+  const params = useParams();
+  console.log(params);
+  const productId = params.id as string;
+
+  const dispatch = useAppDispatch();
+
+  const { currentProduct, items: allProducts } = useAppSelector(
+    (state) => state.products
+  );
+
+  useEffect(() => {
+    // Fetch the product when the component mounts
+    dispatch(fetchProductById(productId));
+
+    // Clear the current product when unmounting
+    return () => {
+      dispatch(clearCurrentProduct());
+    };
+  }, [dispatch, productId]);
+
+  const relatedProducts = allProducts
+    .filter((product) => product.category._id === currentProduct?.category._id)
+    .filter((product) => product._id !== productId);
+
   return (
     <div className=" bg-white ">
       <Navbar />
       <SubHeader />
-      {/* <ProductSection
-        title="Custom Title"
-        price={150}
-        rating={4.5}
-        reviewCount={100}
-      /> */}
       <ProductSection />
       <TabbedInterface />
-      <RelatedProducts products={dummyProductData} />
+      {relatedProducts.length > 0 && (
+        <RelatedProducts products={relatedProducts} />
+      )}
       <Footer />
     </div>
   );
 };
 
-export default page;
+export default ProductPage;

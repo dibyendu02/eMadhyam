@@ -1,38 +1,46 @@
 // types/product.ts
 
+// import { CategoryType, ColorType } from "@/services/types/product";
+
 export interface ProductCardProps {
-  /** Name of the product */
-  name: string;
-  /** Current selling price */
-  price: number;
-  /** Original price before discount */
-  originalPrice?: number;
-  /** Discount percentage (if applicable) */
-  discountPercentage?: number;
-  /** Rating out of 5 */
-  rating: number;
-  /** Number of reviews */
-  reviews?: number;
-  /** URL of the product image */
-  imageUrl: string;
-  /** Callback function when add to cart is clicked */
-  onAddToCart: () => void;
+  product: Product;
+
   /** Optional className for additional styling */
   className?: string;
 }
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
+  imageUrls: string[];
+  category: CategoryType;
+  season: string;
+  color: ColorType;
   shortDescription?: string;
   description?: string;
-  rating: number;
   price: number;
   originalPrice?: number;
   discountPercentage?: number;
-  sizeRanzes?: string[];
+  sizeRanges?: string[];
   inStock: boolean;
-  reviews?: number;
-  imageUrls?: string[];
-  category: string;
+  faqs: { key: string; value: string }[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface CartItem extends Product {
+  quantity: number;
+}
+
+export interface CategoryType {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface ColorType {
+  _id: string;
+  name: string;
+  __v: number;
 }
