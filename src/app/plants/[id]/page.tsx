@@ -1,35 +1,48 @@
 "use client";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
-import React from "react";
-import ProductSection from "./components/ProductSection";
-import TabbedInterface from "./components/TabSection";
 import Footer from "@/components/footer/Footer";
-import RelatedProducts from "./components/RelatedProducts";
-import { dummyProductData } from "@/app/dummydata";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  clearCurrentProduct,
+  fetchProductById,
+} from "@/store/slices/productSlice";
 import { useParams } from "next/navigation";
-import { defaultNullProduct } from "@/commons/constants";
+import { useEffect } from "react";
+import ProductSection from "./components/ProductSection";
+import RelatedProducts from "./components/RelatedProducts";
+import TabbedInterface from "./components/TabSection";
 
 const ProductPage = () => {
   const params = useParams();
   console.log(params);
   const productId = params.id as string;
 
-  const productData = dummyProductData.find(
-    (product) => product.id === productId
+  const dispatch = useAppDispatch();
+
+  const { currentProduct, items: allProducts } = useAppSelector(
+    (state) => state.products
   );
 
-  const relatedProducts = dummyProductData
-    .filter((product) => product.plantType === productData?.plantType)
-    .filter((product) => product.id !== productId);
+  useEffect(() => {
+    // Fetch the product when the component mounts
+    dispatch(fetchProductById(productId));
+
+    // Clear the current product when unmounting
+    return () => {
+      dispatch(clearCurrentProduct());
+    };
+  }, [dispatch, productId]);
+
+  const relatedProducts = allProducts
+    .filter((product) => product.category._id === currentProduct?.category._id)
+    .filter((product) => product._id !== productId);
 
   return (
-    <div className="bg-white ">
+    <div className=" bg-white ">
       <Navbar />
       <SubHeader />
-
-      <ProductSection productData={productData ?? defaultNullProduct} />
-
+      <ProductSection />
       <TabbedInterface />
       {relatedProducts.length > 0 && (
         <RelatedProducts products={relatedProducts} />

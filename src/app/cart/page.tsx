@@ -72,7 +72,7 @@ const CartPage = () => {
                     <div className="space-y-6">
                       {cartItems.map((item) => (
                         <div
-                          key={item.id}
+                          key={item._id}
                           className="flex gap-6 pb-6 border-b border-gray-200 last:border-0"
                         >
                           <div className="relative w-24 h-24 overflow-hidden rounded-lg">
@@ -100,7 +100,7 @@ const CartPage = () => {
                                 </p>
                               </div>
                               <button
-                                onClick={() => handleRemoveItem(item.id)}
+                                onClick={() => handleRemoveItem(item._id)}
                                 className="text-gray-400 hover:text-red-700 "
                               >
                                 <Trash2 className="w-5 h-5" />
@@ -111,7 +111,7 @@ const CartPage = () => {
                                 <button
                                   onClick={() =>
                                     handleQuantityChange(
-                                      item.id,
+                                      item._id,
                                       item.quantity - 1
                                     )
                                   }
@@ -125,7 +125,7 @@ const CartPage = () => {
                                 <button
                                   onClick={() =>
                                     handleQuantityChange(
-                                      item.id,
+                                      item._id,
                                       item.quantity + 1
                                     )
                                   }

@@ -1,12 +1,6 @@
 // types/product.ts
 
-import {
-  ProductCategory,
-  ProductSeason,
-  ProductColor,
-  ProductPlantType,
-  ProductType,
-} from "../constants";
+// import { CategoryType, ColorType } from "@/services/types/product";
 
 export interface ProductCardProps {
   product: Product;
@@ -16,29 +10,37 @@ export interface ProductCardProps {
 }
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
+  imageUrls: string[];
+  category: CategoryType;
+  season: string;
+  color: ColorType;
   shortDescription?: string;
   description?: string;
-  rating: number;
   price: number;
   originalPrice?: number;
   discountPercentage?: number;
-  sizeRanzes?: string[];
+  sizeRanges?: string[];
   inStock: boolean;
-  reviews?: number;
-  imageUrls?: string[];
-  category: ProductCategory;
-  season: ProductSeason;
-  color: ProductColor;
-  plantType: ProductPlantType;
-  productType: ProductType;
-  isBestSeller: boolean;
-  isTrending: boolean;
-  createdAt: Date;
+  faqs: { key: string; value: string }[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
-
 
 export interface CartItem extends Product {
   quantity: number;
+}
+
+export interface CategoryType {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface ColorType {
+  _id: string;
+  name: string;
+  __v: number;
 }

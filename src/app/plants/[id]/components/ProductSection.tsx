@@ -1,25 +1,24 @@
-import React, { useState } from "react";
-import Image from "next/image";
-import { Star, Check } from "lucide-react";
-import { Product } from "@/commons/types/product";
-import Link from "next/link";
-import { addToCart } from "@/store/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { defaultNullProduct } from "@/commons/constants";
+import { addToCart } from "@/store/slices/cartSlice";
+import { Check } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import ProductSectionLoading from "./ProductSectionLoading";
 
-const ProductSection: React.FC<{ productData: Product }> = ({
-  productData,
-}) => {
+const ProductSection: React.FC = ({}) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium");
-  // const [pinCode, setPinCode] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
+  const { currentProduct, loading, error } = useAppSelector(
+    (state) => state.products
+  );
   const cartItems = useAppSelector((state) => state.cart.items);
-  const isInCart = cartItems.some((item) => item.id === productData.id);
+  const isInCart = cartItems.some((item) => item._id === currentProduct?._id);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log("handleAddToCart clicked");
@@ -28,8 +27,8 @@ const ProductSection: React.FC<{ productData: Product }> = ({
       router.push("/cart");
       return;
     }
-    console.log("Product being added:", productData);
-    dispatch(addToCart(productData));
+    console.log("Product being added:", currentProduct);
+    if (currentProduct != null) dispatch(addToCart(currentProduct));
   };
 
   const handleBuyNowClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,32 +36,48 @@ const ProductSection: React.FC<{ productData: Product }> = ({
     e.stopPropagation();
     console.log("Buy now clicked");
     if (!isInCart) {
-      dispatch(addToCart(productData));
+      if (currentProduct != null) dispatch(addToCart(currentProduct));
     }
     console.log("Add to cart action dispatched");
     router.push(`/cart`);
   };
 
-  return productData == defaultNullProduct ? (
-    <div className="text-center py-12">
-      <h2 className="text-2xl font-semibold text-gray-900">
-        Product not found
-      </h2>
-      <p className="mt-2 text-gray-500">
-        The product you are looking for may have been removed or is no longer
-        available.
-      </p>
-    </div>
-  ) : (
-    <div className="max-w-7xl mx-auto p-4 bg-white mt-16">
+  // Show loading state during initial load or when loading flag is true
+  if (!currentProduct && !error) {
+    return <ProductSectionLoading />;
+  }
+
+  // Then check for error state
+  if (error || (!currentProduct && !loading)) {
+    return (
+      <div className="text-center p-12 mt-16 md:mt-4">
+        <h2 className="text-2xl font-semibold text-gray-900">
+          Product not found
+        </h2>
+        <p className="mt-2 text-gray-500">
+          The product you are looking for may have been removed or is no longer
+          available.
+        </p>
+        <Link
+          href="/"
+          className="mt-6 inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700"
+        >
+          Go back to home
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto p-4 bg-white mt-16 md:mt-4">
       <nav className="flex text-sm text-gray-500 mb-4">
         <Link href="/" className="hover:text-gray-700">
           Home
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-900">{productData.category} </span>
+        <span className="text-gray-900">{currentProduct?.category.name} </span>
         <span className="mx-2">/</span>
-        <span className="text-gray-900">{productData.name} </span>
+        <span className="text-gray-900">{currentProduct?.name} </span>
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -72,10 +87,10 @@ const ProductSection: React.FC<{ productData: Product }> = ({
           <div className="aspect-square bg-white rounded-lg overflow-hidden border relative">
             <Image
               src={
-                productData.imageUrls?.[currentImageIndex] ||
+                currentProduct?.imageUrls?.[currentImageIndex] ||
                 "/images/placeholder.jpg"
               }
-              alt={`${productData.name} - View ${currentImageIndex + 1}`}
+              alt={`${currentProduct?.name} - View ${currentImageIndex + 1}`}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -84,7 +99,7 @@ const ProductSection: React.FC<{ productData: Product }> = ({
 
           {/* Thumbnails */}
           <div className="flex space-x-2 overflow-x-auto">
-            {(productData.imageUrls || ["/images/placeholder.jpg"]).map(
+            {(currentProduct?.imageUrls || ["/images/placeholder.jpg"]).map(
               (thumb, idx) => (
                 <button
                   key={idx}
@@ -111,19 +126,19 @@ const ProductSection: React.FC<{ productData: Product }> = ({
         {/* Right column - Product details */}
         <div className="space-y-6">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {productData.name}
+            {currentProduct?.name}
           </h1>
 
-          <p className="text-gray-600">{productData.shortDescription}</p>
+          <p className="text-gray-600">{currentProduct?.shortDescription}</p>
 
           {/* Rating */}
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <div className="flex">
               {[...Array(5)].map((_, idx) => (
                 <Star
                   key={idx}
                   className={`w-5 h-5 ${
-                    idx < Math.floor(productData.rating)
+                    idx < Math.floor(currentProduct?.rating)
                       ? "text-yellow-400 fill-yellow-400"
                       : "text-gray-200"
                   }`}
@@ -131,20 +146,20 @@ const ProductSection: React.FC<{ productData: Product }> = ({
               ))}
             </div>
             <span className="text-gray-700">
-              ({productData.rating} | {productData.reviews} reviews)
+              ({currentProduct?.rating} | {currentProduct?.reviews} reviews)
             </span>
-          </div>
+          </div> */}
 
           {/* Price */}
           <div className="flex items-baseline space-x-2">
             <span className="text-gray-500 line-through">
-              ₹{productData.originalPrice}
+              ₹{currentProduct?.originalPrice}
             </span>
             <span className="text-green-600 font-semibold text-xl">
-              ₹{productData.originalPrice}
+              ₹{currentProduct?.originalPrice}
             </span>
             <span className="text-red-500">
-              ({productData.discountPercentage}% off)
+              ({currentProduct?.discountPercentage}% off)
             </span>
           </div>
 
@@ -171,7 +186,7 @@ const ProductSection: React.FC<{ productData: Product }> = ({
           {/* Stock Status */}
           <div className="flex items-center space-x-2 text-green-600">
             <Check className="w-5 h-5" />
-            <span>{productData.inStock ? "In Stock" : "Out of Stock"}</span>
+            <span>{currentProduct?.inStock ? "In Stock" : "Out of Stock"}</span>
           </div>
 
           {/* Quantity Selector */}
@@ -214,7 +229,9 @@ const ProductSection: React.FC<{ productData: Product }> = ({
             <ul className="space-y-2">
               <li className="flex items-center space-x-2">
                 <Check className="w-5 h-5 text-green-600" />
-                <span className="text-gray-700">{productData.description}</span>
+                <span className="text-gray-700">
+                  {currentProduct?.description}
+                </span>
               </li>
             </ul>
           </div>
