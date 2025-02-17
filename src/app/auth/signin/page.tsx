@@ -7,7 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
-import { loginSuccess } from "@/store/slices/userSlice";
+import { loginSuccess, updateUser } from "@/store/slices/userSlice";
+import { ProfileService } from "@/services/api/profileService";
 
 const SignIn: React.FC = () => {
   const router = useRouter();
@@ -20,14 +21,19 @@ const SignIn: React.FC = () => {
     setError("");
 
     try {
-      const response = await AuthService.login(credentials);
+      // First, login the user
+      const authResponse = await AuthService.login(credentials);
 
-      // Update Redux store
-      dispatch(loginSuccess(response));
+      // Update Redux with initial auth data
+      dispatch(loginSuccess(authResponse));
 
-      // Save auth data to localStorage
-      localStorage.setItem("eMadhyam-token", response.token);
-      localStorage.setItem("eMadhyam-userData", JSON.stringify(response.user));
+      // Then fetch the full profile
+      const profileData = await ProfileService.getProfile(
+        authResponse.user._id
+      );
+
+      // Update Redux with complete profile data
+      dispatch(updateUser(profileData));
 
       // Redirect to home page or dashboard
       router.push("/");

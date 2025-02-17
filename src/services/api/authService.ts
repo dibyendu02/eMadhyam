@@ -1,10 +1,9 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "../config/axiosConfig";
-
 import {
   AuthResponse,
   LoginCredentials,
-  RegisterCredentials,
+  PasswordChangeResponse,
 } from "../types/auth";
 import { ApiError } from "../types/error";
 
@@ -16,8 +15,9 @@ export class AuthService {
         credentials
       );
 
-      // Set the token in cookies as well as localStorage
-      document.cookie = `eMadhyam-token=${response.data.token}; path=/; max-age=604800`; // 7 days
+      // Only store token and userId in localStorage
+      localStorage.setItem("eMadhyam-token", response.data.token);
+      localStorage.setItem("eMadhyam-userId", response.data.user._id);
 
       return response.data;
     } catch (error) {
@@ -30,19 +30,27 @@ export class AuthService {
     }
   }
 
-  static async register(
-    credentials: RegisterCredentials
-  ): Promise<AuthResponse> {
+  static async register(formData: FormData): Promise<AuthResponse> {
     try {
       const response = await axiosInstance.post(
         "/api/user/register",
-        credentials
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
+      // Only store token and userId in localStorage
+      localStorage.setItem("eMadhyam-token", response.data.token);
+      localStorage.setItem("eMadhyam-userId", response.data.user._id);
+
       return response.data;
     } catch (error) {
       if (isAxiosError<ApiError>(error)) {
         if (error.response?.data) {
-          throw new Error(error.response.data.error || "Login failed");
+          throw new Error(error.response.data.error || "Registration failed");
         }
       }
       throw new Error("Network error occurred");
@@ -50,10 +58,35 @@ export class AuthService {
   }
 
   static logout() {
-    // Clear both localStorage and cookies
+    // Only clear token and userId from localStorage
     localStorage.removeItem("eMadhyam-token");
-    localStorage.removeItem("eMadhyam-userData");
-    document.cookie =
-      "eMadhyam-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    localStorage.removeItem("eMadhyam-userId");
+  }
+
+  static async changePassword(
+    oldPassword: string,
+    newPassword: string,
+    userId: string
+  ): Promise<PasswordChangeResponse> {
+    try {
+      const response = await axiosInstance.put<PasswordChangeResponse>(
+        `/api/user/change-password/${userId}`,
+        {
+          currentPassword: oldPassword,
+          newPassword: newPassword,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(
+            error.response.data.error || "Password change failed"
+          );
+        }
+      }
+      throw new Error("Network error occurred");
+    }
   }
 }

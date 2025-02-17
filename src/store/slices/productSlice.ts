@@ -6,12 +6,14 @@ import { ProductService } from "@/services/api/productService";
 interface ProductState {
   items: Product[];
   currentProduct: Product | null;
+  categoryProducts: Product[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ProductState = {
   items: [],
+  categoryProducts: [],
   currentProduct: null,
   loading: false,
   error: null,
@@ -35,6 +37,18 @@ export const fetchProductById = createAsyncThunk(
     try {
       const product = await ProductService.getProductById(id);
       return product;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+export const fetchProductsByCategoryId = createAsyncThunk(
+  "products/fetchByCategoryId",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const products = await ProductService.getProductByCategoryId(id);
+      return products;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
@@ -73,6 +87,19 @@ const productSlice = createSlice({
         state.currentProduct = action.payload;
       })
       .addCase(fetchProductById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Handle fetchProductsByCategoryId cases
+      .addCase(fetchProductsByCategoryId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductsByCategoryId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categoryProducts = action.payload;
+      })
+      .addCase(fetchProductsByCategoryId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

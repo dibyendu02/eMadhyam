@@ -6,12 +6,12 @@ interface UserState {
   user: IUser;
   isAuthenticated: boolean;
   token: string;
+  isLoading: boolean;
 }
 
 const initialState: UserState = {
   user: {
     _id: "",
-
     email: "",
     firstName: "",
     lastName: "",
@@ -25,6 +25,7 @@ const initialState: UserState = {
   },
   isAuthenticated: false,
   token: "",
+  isLoading: false,
 };
 
 const userSlice = createSlice({
@@ -32,19 +33,25 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action: PayloadAction<AuthResponse>) => {
-      state.user = action.payload.user;
+      state.user._id = action.payload.user._id; // Only set the user ID initially
       state.isAuthenticated = true;
       state.token = action.payload.token;
+      state.isLoading = true; // Set loading while we fetch full profile
+    },
+    updateUser: (state, action: PayloadAction<IUser>) => {
+      state.user = action.payload;
+      state.isLoading = false; // Profile loaded
     },
     logout: () => {
       return initialState;
     },
-    updateUser: (state, action: PayloadAction<Partial<IUser>>) => {
-      state.user = { ...state.user, ...action.payload };
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
     },
   },
 });
 
-export const { loginSuccess, logout, updateUser } = userSlice.actions;
+export const { loginSuccess, logout, updateUser, setLoading } =
+  userSlice.actions;
 
 export default userSlice.reducer;

@@ -35,6 +35,23 @@ export class ProductService {
     }
   }
 
+  static async getProductByCategoryId(id: string): Promise<Product[]> {
+    try {
+      const response = await axiosInstance.get<Product[]>(
+        `/api/product/category/${id}`
+      );
+
+      return response.data;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(error.response.data.error || "Login failed");
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
+
   static async getAllCategory(): Promise<CategoryType[]> {
     try {
       const response = await axiosInstance.get<CategoryType[]>(`/api/category`);

@@ -4,6 +4,7 @@ import wishlistReducer from "./slices/wishlistSlice";
 import userReducer from "./slices/userSlice";
 import productReducer from "./slices/productSlice";
 import categoryReducer from "./slices/categorySlice";
+import commonReducer from "./slices/commonSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     user: userReducer,
     products: productReducer,
     categories: categoryReducer,
+    common: commonReducer,
   },
 });
 

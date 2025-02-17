@@ -1,91 +1,90 @@
-import React, { useState } from "react";
-import { Star, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import React, { useState } from "react";
 
-interface StarRatingProps {
-  rating: number;
-  setRating?: (rating: number) => void;
-  readonly?: boolean;
-}
+// interface StarRatingProps {
+//   rating: number;
+//   setRating?: (rating: number) => void;
+//   readonly?: boolean;
+// }
 
-interface ReviewFiltersProps {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
-}
+// interface ReviewFiltersProps {
+//   activeFilter: string;
+//   setActiveFilter: (filter: string) => void;
+// }
 
 interface TabContentProps {
   content: React.ReactNode;
   isActive: boolean;
 }
 
-interface Review {
-  id: number;
-  author: string;
-  rating: number;
-  date: string;
-  content: string;
-  likes: number;
-}
+// interface Review {
+//   id: number;
+//   author: string;
+//   rating: number;
+//   date: string;
+//   content: string;
+//   likes: number;
+// }
 
 interface ProductSpec {
   label: string;
   value: string;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({
-  rating,
-  setRating,
-  readonly = false,
-}) => {
-  return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          onClick={() => !readonly && setRating && setRating(star)}
-          className={`${readonly ? "cursor-default" : "cursor-pointer"}`}
-          type="button"
-        >
-          <Star
-            className={`h-5 w-5 ${
-              star <= rating ? "fill-green-500 text-green-500" : "text-gray-300"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-};
+// const StarRating: React.FC<StarRatingProps> = ({
+//   rating,
+//   setRating,
+//   readonly = false,
+// }) => {
+//   return (
+//     <div className="flex gap-1">
+//       {[1, 2, 3, 4, 5].map((star) => (
+//         <button
+//           key={star}
+//           onClick={() => !readonly && setRating && setRating(star)}
+//           className={`${readonly ? "cursor-default" : "cursor-pointer"}`}
+//           type="button"
+//         >
+//           <Star
+//             className={`h-5 w-5 ${
+//               star <= rating ? "fill-green-500 text-green-500" : "text-gray-300"
+//             }`}
+//           />
+//         </button>
+//       ))}
+//     </div>
+//   );
+// };
 
-const ReviewFilters: React.FC<ReviewFiltersProps> = ({
-  activeFilter,
-  setActiveFilter,
-}) => {
-  const filters: string[] = [
-    "All Reviews",
-    "With Photo & Video",
-    "With Description",
-  ];
+// const ReviewFilters: React.FC<ReviewFiltersProps> = ({
+//   activeFilter,
+//   setActiveFilter,
+// }) => {
+//   const filters: string[] = [
+//     "All Reviews",
+//     "With Photo & Video",
+//     "With Description",
+//   ];
 
-  return (
-    <div className="flex gap-2 mb-4">
-      {filters.map((filter) => (
-        <button
-          key={filter}
-          onClick={() => setActiveFilter(filter)}
-          className={`px-4 py-2 rounded ${
-            activeFilter === filter
-              ? "bg-green-500 text-white"
-              : "border border-gray-300 hover:bg-gray-50"
-          }`}
-          type="button"
-        >
-          {filter}
-        </button>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div className="flex gap-2 mb-4">
+//       {filters.map((filter) => (
+//         <button
+//           key={filter}
+//           onClick={() => setActiveFilter(filter)}
+//           className={`px-4 py-2 rounded ${
+//             activeFilter === filter
+//               ? "bg-green-500 text-white"
+//               : "border border-gray-300 hover:bg-gray-50"
+//           }`}
+//           type="button"
+//         >
+//           {filter}
+//         </button>
+//       ))}
+//     </div>
+//   );
+// };
 
 const TabContent: React.FC<TabContentProps> = ({ content, isActive }) => {
   if (!isActive) return null;
@@ -94,10 +93,13 @@ const TabContent: React.FC<TabContentProps> = ({ content, isActive }) => {
 
 const TabbedInterface: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("description");
-  const [reviewRating, setReviewRating] = useState<number>(5);
-  const [reviewFilter, setReviewFilter] = useState<string>("All Reviews");
-  const [reviewTitle, setReviewTitle] = useState<string>("");
-  const [reviewContent, setReviewContent] = useState<string>("");
+  // const [reviewRating, setReviewRating] = useState<number>(5);
+  // const [reviewFilter, setReviewFilter] = useState<string>("All Reviews");
+  // const [reviewTitle, setReviewTitle] = useState<string>("");
+  // const [reviewContent, setReviewContent] = useState<string>("");
+  const { currentProduct, loading, error } = useAppSelector(
+    (state) => state.products
+  );
 
   const tabs = [
     { id: "description", label: "Description" },
@@ -106,43 +108,94 @@ const TabbedInterface: React.FC = () => {
     { id: "faq", label: "FAQ" },
   ] as const;
 
-  const productSpecs: ProductSpec[] = [
-    { label: "Weight", value: "85g" },
-    { label: "Dimension", value: "3 x 13 cm" },
-    { label: "Availability", value: "In stock" },
-    { label: "Color", value: "Dark Green" },
-    { label: "Watering Requirement", value: "Once a week" },
-    { label: "Sunlight Requirements", value: "Bright Indirect Light" },
-    { label: "Season", value: "All season Plants" },
-    { label: "Pot Size", value: "Small" },
-  ];
-
-  const reviews: Review[] = [
-    {
-      id: 1,
-      author: "Darrell Steward",
-      rating: 5,
-      date: "July 2, 2020 03:29 PM",
-      content: "This is amazing product I have.",
-      likes: 128,
-    },
-    {
-      id: 2,
-      author: "Darlene Robertson",
-      rating: 5,
-      date: "July 2, 2020 1:04 PM",
-      content: "This is amazing product I have.",
-      likes: 82,
-    },
-  ];
-
-  const { currentProduct, error } = useAppSelector((state) => state.products);
-
-  const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log({ reviewRating, reviewTitle, reviewContent });
-    // Handle review submission here
+  const getProductSpecs = () => {
+    const tempProductSpecs: ProductSpec[] = [];
+    if (currentProduct?.weight != undefined && currentProduct?.weight != null) {
+      tempProductSpecs.push({ label: "Weight", value: currentProduct?.weight });
+    }
+    if (
+      currentProduct?.dimensions != undefined &&
+      currentProduct?.dimensions != null
+    ) {
+      tempProductSpecs.push({
+        label: "Dimension",
+        value: currentProduct?.dimensions,
+      });
+    }
+    if (
+      currentProduct?.inStock != undefined &&
+      currentProduct?.inStock != null
+    ) {
+      tempProductSpecs.push({
+        label: "Availability",
+        value: currentProduct?.inStock ? "In stock" : "Out of stock",
+      });
+    }
+    if (currentProduct?.color != undefined && currentProduct?.color != null) {
+      tempProductSpecs.push({
+        label: "Color",
+        value: currentProduct?.color.name,
+      });
+    }
+    if (
+      currentProduct?.waterRequirement != undefined &&
+      currentProduct?.waterRequirement != null
+    ) {
+      tempProductSpecs.push({
+        label: "Watering Requirement",
+        value: currentProduct?.waterRequirement,
+      });
+    }
+    if (
+      currentProduct?.sunlightRequirement != undefined &&
+      currentProduct?.sunlightRequirement != null
+    ) {
+      tempProductSpecs.push({
+        label: "Sunlight Requirements",
+        value: currentProduct?.sunlightRequirement,
+      });
+    }
+    if (currentProduct?.season != undefined && currentProduct?.season != null) {
+      tempProductSpecs.push({ label: "Season", value: currentProduct?.season });
+    }
+    if (
+      currentProduct?.sizeRanges != undefined &&
+      currentProduct?.sizeRanges != null
+    ) {
+      tempProductSpecs.push({
+        label: "Pot Size",
+        value: currentProduct?.sizeRanges[0],
+      });
+    }
+    return tempProductSpecs;
   };
+
+  const productSpecs: ProductSpec[] = getProductSpecs();
+
+  // const reviews: Review[] = [
+  //   {
+  //     id: 1,
+  //     author: "Darrell Steward",
+  //     rating: 5,
+  //     date: "July 2, 2020 03:29 PM",
+  //     content: "This is amazing product I have.",
+  //     likes: 128,
+  //   },
+  //   {
+  //     id: 2,
+  //     author: "Darlene Robertson",
+  //     rating: 5,
+  //     date: "July 2, 2020 1:04 PM",
+  //     content: "This is amazing product I have.",
+  //     likes: 82,
+  //   },
+  // ];
+
+  // const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   console.log({ reviewRating, reviewTitle, reviewContent });
+  //   // Handle review submission here
+  // };
 
   const content: Record<string, React.ReactNode> = {
     description: (
@@ -193,7 +246,7 @@ const TabbedInterface: React.FC = () => {
     ),
     review: (
       <div className="space-y-8 text-gray-900">
-        <div className="bg-white p-6 rounded-lg border">
+        {/* <div className="bg-white p-6 rounded-lg border">
           <div className="flex items-center gap-4 mb-6">
             <div className="text-4xl font-bold">4.5</div>
             <div>
@@ -269,26 +322,42 @@ const TabbedInterface: React.FC = () => {
               Submit Review
             </button>
           </form>
-        </div>
+        </div> */}
       </div>
     ),
     faq: (
       <div className="text-gray-900">
-        <h3 className="font-bold mb-2">Frequently Asked Questions</h3>
+        {!loading &&
+        !error &&
+        currentProduct?.faqs &&
+        currentProduct.faqs.length > 0 ? (
+          <h3 className="font-bold mb-2">Frequently Asked Questions</h3>
+        ) : null}
         <div className="space-y-4">
-          <div>
-            <p className="font-semibold">
-              Q: How often should I water my Lucky Bamboo?
-            </p>
-            <p>A: Water moderately when the top soil feels dry</p>
-          </div>
-          <div>
-            <p className="font-semibold">Q: Can it survive in low light?</p>
-            <p>
-              A: Yes, Lucky Bamboo adapts well to moderate or indirect light
-              conditions
-            </p>
-          </div>
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-full"></div>
+              </div>
+            ))
+          ) : currentProduct?.faqs && currentProduct.faqs.length > 0 ? (
+            // Render FAQs if available
+            currentProduct.faqs.map((faq, index) => (
+              <div key={index} className="border-b pb-4 last:border-b-0">
+                <p className="font-semibold text-gray-900 mb-2">
+                  Q: {faq.question}
+                </p>
+                <p className="text-gray-600">A: {faq.answer}</p>
+              </div>
+            ))
+          ) : (
+            // Show message if no FAQs available
+            <div className="text-center py-8 text-gray-500">
+              <p>No FAQs available for this product.</p>
+            </div>
+          )}
         </div>
       </div>
     ),

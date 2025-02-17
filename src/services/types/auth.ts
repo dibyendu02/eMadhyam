@@ -22,3 +22,12 @@ export interface AuthResponse {
 export interface AuthError {
   error: string;
 }
+
+export interface updateProfileResponse {
+  message: string;
+  user: IUser;
+}
+
+export interface PasswordChangeResponse {
+  message: string;
+}

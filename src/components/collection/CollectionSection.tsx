@@ -1,21 +1,30 @@
-import React from "react";
-import Link from "next/link";
 import { Collection } from "@/commons/types/collection";
-import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setCurrentCategory } from "@/store/slices/categorySlice";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 import { useRouter } from "next/navigation";
+import { fetchProductsByCategoryId } from "@/store/slices/productSlice";
+import {
+  fetchColors,
+  fetchPlantTypes,
+  fetchProductTypes,
+} from "@/store/slices/commonSlice";
 
 interface CollectionCardProps {
   collection: Collection;
 }
 
 const CollectionCard: React.FC<CollectionCardProps> = ({ collection }) => {
-  const dispatch = useAppDispatch();
   const navigate = useRouter();
+  const dispatch = useAppDispatch();
 
   const onCollectionCardClick = (collection: Collection) => {
-    dispatch(setCurrentCategory(collection));
+    dispatch(fetchColors());
+    dispatch(fetchProductTypes());
+    dispatch(fetchPlantTypes());
+    dispatch(fetchProductsByCategoryId(collection.id));
+
     navigate.push(`/collections/${collection.slug}`);
   };
 
