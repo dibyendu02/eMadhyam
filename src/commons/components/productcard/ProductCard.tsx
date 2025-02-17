@@ -1,16 +1,17 @@
 // ProductCard.tsx
 "use client";
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { Heart } from "lucide-react";
 import { ProductCardProps } from "@/commons/types/product";
-import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addToCart } from "@/store/slices/cartSlice";
+import { addToCartAsync } from "@/store/slices/cartSlice";
 import {
   addToWishlist,
   removeFromWishlist,
 } from "@/store/slices/wishlistSlice";
+import { Heart } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
@@ -18,21 +19,48 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const { user } = useAppSelector((state) => state.user);
+  const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
+  const { isLoading } = useAppSelector((state) => state.cart);
 
   const handleNavigate = () => {
     router.push(`/plants/${product._id}`);
   };
 
-  const dispatch = useAppDispatch();
-  const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const isInWishlist = wishlistItems.some((item) => item._id === product._id);
 
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("handleAddToCart clicked");
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    console.log("Product being added:", product);
-    dispatch(addToCart(product));
-    console.log("Add to cart action dispatched");
+
+    if (!user?._id) {
+      toast.error("Please login to add to cart.", {
+        duration: 2000,
+      });
+      return;
+    }
+
+    try {
+      await dispatch(
+        addToCartAsync({
+          product,
+          userId: user._id,
+        })
+      ).unwrap();
+      toast.success("Added to cart!", {
+        duration: 2000,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to add to cart. Please try again.";
+      toast.error(errorMessage, {
+        duration: 2000,
+      });
+      console.error("Cart sync error:", error);
+    }
   };
 
   const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -53,10 +81,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
     console.log("Current wishlist items:", wishlistItems);
   }, [wishlistItems]);
 
-  const cartItems = useAppSelector((state) => state.cart.items);
-  useEffect(() => {
-    console.log("Current cart items:", cartItems);
-  }, [cartItems]);
+  // useEffect(() => {
+  //   console.log("Current cart items:", cartItems);
+  // }, [cartItems]);
 
   return (
     <div
@@ -134,9 +161,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex items-center gap-2 md:gap-3 mt-auto">
             <button
               onClick={handleAddToCart}
-              className="flex-grow bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors"
+              disabled={isLoading}
+              className={`flex-grow ${
+                isLoading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
+              } text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors`}
             >
-              Add to cart
+              {isLoading ? "Adding..." : "Add to cart"}
             </button>
             <button
               className={`p-1.5 md:p-2.5 rounded-lg transition-all duration-300 ${

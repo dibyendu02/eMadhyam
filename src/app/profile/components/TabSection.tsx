@@ -1,10 +1,10 @@
 // src/components/profile/TabSection.tsx
+import { TabSectionProps } from "@/commons/types/profile";
+import { Lock, MapPin, User } from "lucide-react";
 import { useState } from "react";
-import { ProfileForm } from "./ProfileForm";
 import { AddressSection } from "./AddressSection";
 import { PasswordSection } from "./PasswordSection";
-import { IUser, TabSectionProps } from "@/commons/types/profile";
-import { User, MapPin, Lock } from "lucide-react";
+import { ProfileForm } from "./ProfileForm";
 
 type TabId = "profile" | "address" | "password";
 
@@ -37,11 +37,6 @@ export const TabSection: React.FC<TabSectionProps> = ({ user }) => {
     },
   ];
 
-  const handleSubmit = async (data: Partial<IUser>) => {
-    // Implement your submit logic here
-    console.log("Form submitted:", data);
-  };
-
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Tabs - Horizontal on mobile, Vertical on desktop */}
@@ -65,30 +60,20 @@ export const TabSection: React.FC<TabSectionProps> = ({ user }) => {
 
       {/* Content Area */}
       <div className="flex-1 md:pl-6">
-        {activeTab === "profile" && (
-          <ProfileForm user={user} onSubmit={handleSubmit} />
-        )}
+        {activeTab === "profile" && <ProfileForm user={user} />}
         {activeTab === "address" && (
           <AddressSection
             addresses={user.address}
-            onAddAddress={async (address) =>
-              console.log("Add address:", address)
-            }
             onUpdateAddress={async (index, address) =>
               console.log("Update address:", index, address)
             }
             onDeleteAddress={async (index) =>
               console.log("Delete address:", index)
             }
+            user={user}
           />
         )}
-        {activeTab === "password" && (
-          <PasswordSection
-            onPasswordChange={async (data) =>
-              console.log("Password change:", data)
-            }
-          />
-        )}
+        {activeTab === "password" && <PasswordSection />}
       </div>
     </div>
   );

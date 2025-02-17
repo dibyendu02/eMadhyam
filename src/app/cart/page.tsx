@@ -4,7 +4,10 @@ import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { removeFromCart, updateQuantity } from "@/store/slices/cartSlice";
+import {
+  removeFromCartAsync,
+  updateQuantityAsync,
+} from "@/store/slices/cartSlice";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,11 +22,11 @@ const CartPage = () => {
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    dispatch(updateQuantity({ id, quantity: newQuantity }));
+    dispatch(updateQuantityAsync({ id, quantity: newQuantity }));
   };
 
   const handleRemoveItem = (id: string) => {
-    dispatch(removeFromCart(id));
+    dispatch(removeFromCartAsync({ productId: id }));
   };
 
   return (
