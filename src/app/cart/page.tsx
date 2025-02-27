@@ -19,18 +19,19 @@ const CartPage = () => {
   const totalAmount = useAppSelector((state) => state.cart.totalAmount);
   const totalMRP = useAppSelector((state) => state.cart.totalMRP);
   const totalDiscount = useAppSelector((state) => state.cart.totalDiscount);
+  const userId = useAppSelector((state) => state.user.user?._id); // Get userId from user state
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    dispatch(updateQuantityAsync({ id, quantity: newQuantity }));
+    dispatch(updateQuantityAsync({ id, quantity: newQuantity, userId }));
   };
 
   const handleRemoveItem = (id: string) => {
-    dispatch(removeFromCartAsync({ productId: id }));
+    dispatch(removeFromCartAsync({ productId: id, userId }));
   };
 
   return (
-    <div className=" flex flex-col bg-white ">
+    <div className="flex flex-col bg-white">
       <Navbar />
       <SubHeader />
       <div className="bg-white border-b border-gray-200 mt-16 md:mt-4">
@@ -69,7 +70,7 @@ const CartPage = () => {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow">
                   <div className="md:p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6 ">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
                       Shopping Cart ({totalQuantity} items)
                     </h2>
                     <div className="space-y-6">
@@ -81,13 +82,13 @@ const CartPage = () => {
                           <div className="relative w-24 h-24 overflow-hidden rounded-lg">
                             <Image
                               src={
-                                item.imageUrls
+                                item.imageUrls && item.imageUrls.length > 0
                                   ? item.imageUrls[0]
                                   : "/placeholder.jpg"
                               }
                               alt={item.name}
                               fill
-                              className={`object-cover transform transition-transform duration-500 `}
+                              className="object-cover transform transition-transform duration-500"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               priority={false}
                             />
@@ -104,7 +105,7 @@ const CartPage = () => {
                               </div>
                               <button
                                 onClick={() => handleRemoveItem(item._id)}
-                                className="text-gray-400 hover:text-red-700 "
+                                className="text-gray-400 hover:text-red-700"
                               >
                                 <Trash2 className="w-5 h-5" />
                               </button>
@@ -132,7 +133,7 @@ const CartPage = () => {
                                       item.quantity + 1
                                     )
                                   }
-                                  className="p-1 rounded-md border border-gray-300 hover:bg-gray-50 "
+                                  className="p-1 rounded-md border border-gray-300 hover:bg-gray-50"
                                 >
                                   <Plus className="w-4 h-4 text-gray-900" />
                                 </button>
@@ -141,9 +142,11 @@ const CartPage = () => {
                                 <p className="text-sm font-medium text-gray-900">
                                   ₹{item.price * item.quantity}
                                 </p>
-                                <p className="text-sm text-gray-500 line-through">
-                                  ₹{item.originalPrice ?? 0 * item.quantity}
-                                </p>
+                                {item.originalPrice && (
+                                  <p className="text-sm text-gray-500 line-through">
+                                    ₹{item.originalPrice * item.quantity}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -161,7 +164,7 @@ const CartPage = () => {
                     Price Details
                   </h2>
                   <div className="space-y-4">
-                    <div className="flex justify-between text-sm text-gray-500 ">
+                    <div className="flex justify-between text-sm text-gray-500">
                       <span>MRP ({totalQuantity} items)</span>
                       <span>₹{totalMRP}</span>
                     </div>
@@ -178,11 +181,11 @@ const CartPage = () => {
                         <span>Total Amount</span>
                         <span>₹{totalAmount}</span>
                       </div>
-                      <p className=" text-sm text-gray-500 mt-2">
+                      <p className="text-sm text-gray-500 mt-2">
                         You will save ₹{totalDiscount} on this order
                       </p>
                     </div>
-                    <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 mt-6 ">
+                    <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 mt-6">
                       Proceed to checkout
                     </button>
                   </div>

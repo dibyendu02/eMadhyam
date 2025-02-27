@@ -85,24 +85,24 @@ export const removeFromCartAsync = createAsyncThunk(
     }
 
     try {
+      // Save the original state before modification
+      const { cart } = getState() as { cart: CartState };
+      const originalItems = [...cart.items];
+      
       // First update local state
       dispatch(cartSlice.actions.removeFromCartLocal(productId));
 
       // Then sync with backend
-      const { cart } = getState() as { cart: CartState };
+      const updatedCart = getState() as { cart: CartState };
       const formData = new FormData();
-      formData.append("cart", JSON.stringify(cart.items));
+      formData.append("cart", JSON.stringify(updatedCart.cart.items));
 
       const response = await ProfileService.updateProfile(userId, formData);
       return response;
     } catch (error) {
-      // Restore the item if API fails
-      const { cart } = getState() as { cart: CartState };
-      const originalItem = cart.items.find((item) => item._id === productId);
-      if (originalItem) {
-        dispatch(cartSlice.actions.addToCartLocal(originalItem));
-      }
-      throw error;
+      // Revert the state if API fails
+      console.error("Error removing item from cart:", error);
+      return rejectWithValue("Failed to remove item from cart");
     }
   }
 );
@@ -125,20 +125,30 @@ export const updateQuantityAsync = createAsyncThunk(
       return rejectWithValue("Please login to update cart");
     }
 
+    // Save the original item quantity before modification
+    const { cart } = getState() as { cart: CartState };
+    const originalItem = cart.items.find(item => item._id === id);
+    const originalQuantity = originalItem ? originalItem.quantity : 0;
+
     try {
       // First update local state
       dispatch(cartSlice.actions.updateQuantityLocal({ id, quantity }));
 
       // Then sync with backend
-      const { cart } = getState() as { cart: CartState };
+      const updatedCart = getState() as { cart: CartState };
       const formData = new FormData();
-      formData.append("cart", JSON.stringify(cart.items));
+      formData.append("cart", JSON.stringify(updatedCart.cart.items));
 
       const response = await ProfileService.updateProfile(userId, formData);
       return response;
     } catch (error) {
       // Revert to original quantity if API fails
-      throw error;
+      console.error("Error updating quantity:", error);
+      // If we have the original quantity, revert to it
+      if (originalQuantity) {
+        dispatch(cartSlice.actions.updateQuantityLocal({ id, quantity: originalQuantity }));
+      }
+      return rejectWithValue("Failed to update item quantity");
     }
   }
 );
