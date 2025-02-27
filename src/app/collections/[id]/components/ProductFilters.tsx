@@ -1,12 +1,7 @@
-import {
-  ProductPlantType,
-  ProductColor,
-  ProductSeason,
-  PriceRange,
-  PriceRanges,
-} from "@/commons/constants";
+import { ProductSeason, PriceRange, PriceRanges } from "@/commons/constants";
 import React from "react";
 import { FilterState } from "../page";
+import { useAppSelector } from "@/store/hooks";
 
 interface FilterProps {
   onFilterChange: (
@@ -22,6 +17,32 @@ const ProductFilters: React.FC<FilterProps> = ({
   selectedFilters,
   onClearFilters,
 }) => {
+  const { colors, plantTypes, loading } = useAppSelector(
+    (state) => state.common
+  );
+
+  if (loading) {
+    return (
+      <div className="w-full md:w-64 bg-white p-6 rounded-lg shadow-sm animate-pulse">
+        <div className="space-y-6">
+          {[...Array(5)].map((_, index) => (
+            <div key={index} className="space-y-2">
+              <div className="h-4 w-24 bg-gray-200 rounded"></div>
+              <div className="space-y-2">
+                {[...Array(4)].map((_, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="h-4 w-4 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full md:w-64 bg-white p-6 rounded-lg shadow-sm">
       <div className="space-y-6">
@@ -34,7 +55,6 @@ const ProductFilters: React.FC<FilterProps> = ({
             Clear all
           </button>
         </div>
-        {/* Price Range Filter */}
         {/* Price Range Filter */}
         <div>
           <h3 className="text-md font-medium text-gray-900 mb-2">
@@ -81,15 +101,15 @@ const ProductFilters: React.FC<FilterProps> = ({
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Plant Type</h3>
           <div className="space-y-2">
-            {Object.values(ProductPlantType).map((type) => (
-              <label key={type} className="flex items-center">
+            {plantTypes.map((type) => (
+              <label key={type._id} className="flex items-center">
                 <input
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                  checked={selectedFilters.plantTypes.includes(type)}
-                  onChange={() => onFilterChange("plantTypes", type)}
+                  checked={selectedFilters.plantTypes.includes(type.name)}
+                  onChange={() => onFilterChange("plantTypes", type.name)}
                 />
-                <span className="ml-2 text-sm text-gray-600">{type}</span>
+                <span className="ml-2 text-sm text-gray-600">{type.name}</span>
               </label>
             ))}
           </div>
@@ -99,15 +119,15 @@ const ProductFilters: React.FC<FilterProps> = ({
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Color</h3>
           <div className="space-y-2">
-            {Object.values(ProductColor).map((color) => (
-              <label key={color} className="flex items-center">
+            {colors.map((color) => (
+              <label key={color._id} className="flex items-center">
                 <input
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                  checked={selectedFilters.colors.includes(color)}
-                  onChange={() => onFilterChange("colors", color)}
+                  checked={selectedFilters.colors.includes(color.name)}
+                  onChange={() => onFilterChange("colors", color.name)}
                 />
-                <span className="ml-2 text-sm text-gray-600">{color}</span>
+                <span className="ml-2 text-sm text-gray-600">{color.name}</span>
               </label>
             ))}
           </div>

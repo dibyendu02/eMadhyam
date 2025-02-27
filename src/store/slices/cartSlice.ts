@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { CartItem, Product } from "@/commons/types/product";
+import { ProfileService } from "@/services/api/profileService";
 
 interface CartState {
   items: CartItem[];
@@ -7,6 +8,8 @@ interface CartState {
   totalAmount: number;
   totalMRP: number;
   totalDiscount: number;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: CartState = {
@@ -15,8 +18,11 @@ const initialState: CartState = {
   totalAmount: 0,
   totalMRP: 0,
   totalDiscount: 0,
+  isLoading: false,
+  error: null,
 };
 
+// Helper function to calculate cart totals
 const calculateCartTotals = (items: CartItem[]) => {
   return items.reduce(
     (acc, item) => {
@@ -37,12 +43,113 @@ const calculateCartTotals = (items: CartItem[]) => {
   );
 };
 
+// Async thunk for adding to cart
+export const addToCartAsync = createAsyncThunk(
+  "cart/addToCartAsync",
+  async (
+    { product, userId }: { product: Product; userId?: string },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    if (!userId) {
+      return rejectWithValue("Please login to add items to cart");
+    }
+
+    try {
+      // First update local state
+      dispatch(cartSlice.actions.addToCartLocal(product));
+
+      // Then sync with backend
+      const { cart } = getState() as { cart: CartState };
+      const formData = new FormData();
+      formData.append("cart", JSON.stringify(cart.items));
+
+      const response = await ProfileService.updateProfile(userId, formData);
+      return response;
+    } catch (error) {
+      // Revert local state if API fails
+      dispatch(cartSlice.actions.removeFromCartLocal(product._id));
+      throw error;
+    }
+  }
+);
+
+// Async thunk for removing from cart
+export const removeFromCartAsync = createAsyncThunk(
+  "cart/removeFromCartAsync",
+  async (
+    { productId, userId }: { productId: string; userId?: string },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    if (!userId) {
+      return rejectWithValue("Please login to remove items from cart");
+    }
+
+    try {
+      // First update local state
+      dispatch(cartSlice.actions.removeFromCartLocal(productId));
+
+      // Then sync with backend
+      const { cart } = getState() as { cart: CartState };
+      const formData = new FormData();
+      formData.append("cart", JSON.stringify(cart.items));
+
+      const response = await ProfileService.updateProfile(userId, formData);
+      return response;
+    } catch (error) {
+      // Restore the item if API fails
+      const { cart } = getState() as { cart: CartState };
+      const originalItem = cart.items.find((item) => item._id === productId);
+      if (originalItem) {
+        dispatch(cartSlice.actions.addToCartLocal(originalItem));
+      }
+      throw error;
+    }
+  }
+);
+
+export const updateQuantityAsync = createAsyncThunk(
+  "cart/updateQuantityAsync",
+  async (
+    {
+      id,
+      quantity,
+      userId,
+    }: {
+      id: string;
+      quantity: number;
+      userId?: string;
+    },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    if (!userId) {
+      return rejectWithValue("Please login to update cart");
+    }
+
+    try {
+      // First update local state
+      dispatch(cartSlice.actions.updateQuantityLocal({ id, quantity }));
+
+      // Then sync with backend
+      const { cart } = getState() as { cart: CartState };
+      const formData = new FormData();
+      formData.append("cart", JSON.stringify(cart.items));
+
+      const response = await ProfileService.updateProfile(userId, formData);
+      return response;
+    } catch (error) {
+      // Revert to original quantity if API fails
+      throw error;
+    }
+  }
+);
+
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<Product>) => {
-      console.log("Adding to cart:", action.payload);
+    // Local state updates
+    addToCartLocal: (state, action: PayloadAction<Product>) => {
       const existingItem = state.items.find(
         (item) => item._id === action.payload._id
       );
@@ -54,21 +161,14 @@ const cartSlice = createSlice({
       }
 
       const totals = calculateCartTotals(state.items);
-      state.totalQuantity = totals.totalQuantity;
-      state.totalAmount = totals.totalAmount;
-      state.totalMRP = totals.totalMRP;
-      state.totalDiscount = totals.totalDiscount;
+      Object.assign(state, totals);
     },
-    removeFromCart: (state, action: PayloadAction<string>) => {
+    removeFromCartLocal: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item._id !== action.payload);
-
       const totals = calculateCartTotals(state.items);
-      state.totalQuantity = totals.totalQuantity;
-      state.totalAmount = totals.totalAmount;
-      state.totalMRP = totals.totalMRP;
-      state.totalDiscount = totals.totalDiscount;
+      Object.assign(state, totals);
     },
-    updateQuantity: (
+    updateQuantityLocal: (
       state,
       action: PayloadAction<{ id: string; quantity: number }>
     ) => {
@@ -76,23 +176,65 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = action.payload.quantity;
       }
-
       const totals = calculateCartTotals(state.items);
-      state.totalQuantity = totals.totalQuantity;
-      state.totalAmount = totals.totalAmount;
-      state.totalMRP = totals.totalMRP;
-      state.totalDiscount = totals.totalDiscount;
+      Object.assign(state, totals);
     },
     clearCart: (state) => {
-      state.items = [];
-      state.totalQuantity = 0;
-      state.totalAmount = 0;
-      state.totalMRP = 0;
-      state.totalDiscount = 0;
+      Object.assign(state, initialState);
     },
+    setCartFromProfile: (state, action: PayloadAction<Product[]>) => {
+      state.items = action.payload.map((item) => ({ ...item, quantity: 1 }));
+      const totals = calculateCartTotals(state.items);
+      Object.assign(state, totals);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Add to cart async
+      .addCase(addToCartAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addToCartAsync.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(addToCartAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Remove from cart async
+      .addCase(removeFromCartAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(removeFromCartAsync.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(removeFromCartAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Update quantity async
+      .addCase(updateQuantityAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateQuantityAsync.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateQuantityAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCartLocal,
+  removeFromCartLocal,
+  updateQuantityLocal,
+  clearCart,
+  setCartFromProfile,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

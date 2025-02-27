@@ -1,16 +1,24 @@
+// src/app/collections/[id]/page.tsx
+
 "use client";
-import { useState, useMemo, useEffect } from "react";
-import { useParams } from "next/navigation";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
+import { PriceRange } from "@/commons/constants";
 import Footer from "@/components/footer/Footer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import CollectionHeader from "./components/CollectionHeader";
+import MobileFilterDrawer from "./components/MobileFilterDrawer";
 import ProductFilters from "./components/ProductFilters";
 import ProductGrid from "./components/ProductGrid";
-import { PriceRange } from "@/commons/constants";
-import MobileFilterDrawer from "./components/MobileFilterDrawer";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearCurrentCategory } from "@/store/slices/categorySlice";
+import {
+  fetchColors,
+  fetchPlantTypes,
+  fetchProductTypes,
+} from "@/store/slices/commonSlice";
+import { fetchProductsByCategoryId } from "@/store/slices/productSlice";
+import { fetchCategories } from "@/store/slices/categorySlice";
 
 export interface FilterState {
   colors: string[];
@@ -34,6 +42,8 @@ const CollectionPage = () => {
   const params = useParams();
   const categorySlug = params.id as string;
 
+  const { items: collections } = useAppSelector((state) => state.categories);
+
   const defaultFilters: FilterState = {
     colors: [],
     plantTypes: [],
@@ -43,20 +53,7 @@ const CollectionPage = () => {
   };
   const dispatch = useAppDispatch();
 
-  const { items: allProducts } = useAppSelector((state) => state.products);
-  const { currentCategory } = useAppSelector((state) => state.categories);
-
-  const categoryProducts = useMemo(() => {
-    return allProducts.filter(
-      (product) => product.category._id === currentCategory?.id
-    );
-  }, [allProducts, currentCategory]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearCurrentCategory());
-    };
-  }, [dispatch]);
+  const { categoryProducts } = useAppSelector((state) => state.products);
 
   // State for sorting and filters
   const [currentSort, setCurrentSort] = useState("name-asc");
@@ -78,12 +75,12 @@ const CollectionPage = () => {
       }
 
       // Plant type filter
-      // if (
-      //   selectedFilters.plantTypes.length > 0 &&
-      //   !selectedFilters.plantTypes.includes(product.plantType)
-      // ) {
-      //   return false;
-      // }
+      if (
+        selectedFilters.plantTypes.length > 0 &&
+        !selectedFilters.plantTypes.includes(product.plantType?.name ?? "")
+      ) {
+        return false;
+      }
 
       // Season filter
       if (
@@ -124,7 +121,7 @@ const CollectionPage = () => {
           return 0;
       }
     });
-  }, [categorySlug, selectedFilters, currentSort, categoryProducts]);
+  }, [selectedFilters, currentSort, categoryProducts]);
 
   const handleClearFilters = () => {
     setSelectedFilters(defaultFilters);
@@ -175,6 +172,22 @@ const CollectionPage = () => {
   const handleSortChange = (sortValue: string) => {
     setCurrentSort(sortValue);
   };
+
+  useEffect(() => {
+    if (collections.length === 0) {
+      dispatch(fetchCategories()); // Ensure collections are fetched
+    }
+
+    const collection = collections.find(
+      (collection) => collection.slug === categorySlug
+    );
+    if (!collection) return;
+
+    dispatch(fetchColors());
+    dispatch(fetchProductTypes());
+    dispatch(fetchPlantTypes());
+    dispatch(fetchProductsByCategoryId(collection.id));
+  }, [dispatch, collections, categorySlug]);
 
   return (
     <div className="flex flex-col bg-white">

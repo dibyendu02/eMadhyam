@@ -23,7 +23,17 @@ export interface Product {
   discountPercentage?: number;
   sizeRanges?: string[];
   inStock: boolean;
-  faqs: { key: string; value: string }[];
+  faqs: { question: string; answer: string }[];
+  weight?: string;
+  dimensions?: string;
+  waterRequirement?: string;
+  sunlightRequirement?: string;
+  isBestseller?: boolean;
+  isTrending?: boolean;
+  productType?: ProductType;
+  plantType?: PlantType;
+  reviews?: number;
+  rating?: number;
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -40,6 +50,18 @@ export interface CategoryType {
 }
 
 export interface ColorType {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface ProductType {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface PlantType {
   _id: string;
   name: string;
   __v: number;

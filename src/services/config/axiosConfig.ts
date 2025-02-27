@@ -10,9 +10,10 @@ const axiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("eMadhyam-token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Change from Authorization to token header
+      config.headers.token = `Bearer ${token}`;
     }
     return config;
   },
@@ -27,7 +28,8 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized access
-      localStorage.removeItem("token");
+      localStorage.removeItem("eMadhyam-token");
+      localStorage.removeItem("eMadhyam-userId");
       window.location.href = "/auth/signin";
     }
     return Promise.reject(error);

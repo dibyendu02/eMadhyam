@@ -1,41 +1,67 @@
-// src/hooks/useStorePersist.ts
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginSuccess } from "@/store/slices/userSlice";
-// import { addToCart } from "@/store/slices/cartSlice";
-// import { addToWishlist } from "@/store/slices/wishlistSlice";
+import { loginSuccess, updateUser } from "@/store/slices/userSlice";
+import { ProfileService } from "@/services/api/profileService";
 
 export const useStorePersist = () => {
   const dispatch = useAppDispatch();
-  // const cart = useAppSelector((state) => state.cart);
-  // const wishlist = useAppSelector((state) => state.wishlist);
   const user = useAppSelector((state) => state.user);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Load persisted state
   useEffect(() => {
-    // Load auth state
-    const token = localStorage.getItem("eMadhyam-token");
-    if (token) {
-      const userData = localStorage.getItem("eMadhyam-userData");
-      if (userData) {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem("eMadhyam-token");
+      const userId = localStorage.getItem("eMadhyam-userId");
+
+      if (token && userId) {
+        dispatch(
+          loginSuccess({
+            token,
+            user: {
+              _id: userId,
+              email: "",
+              firstName: "",
+              lastName: "",
+              phoneNumber: "",
+              gender: "male",
+              imageUrl: "",
+              address: [],
+              isAdmin: false,
+              cart: [],
+              wishlist: [],
+            },
+          })
+        );
+
         try {
-          const user = JSON.parse(userData);
-          dispatch(loginSuccess({ token, user }));
+          const userData = await ProfileService.getProfile(userId);
+          dispatch(updateUser(userData));
         } catch (error) {
-          console.log("Error parsing user data:", error);
+          console.error("Error fetching user profile:", error);
           localStorage.removeItem("eMadhyam-token");
-          localStorage.removeItem("eMadhyam-userData");
+          localStorage.removeItem("eMadhyam-userId");
+          window.location.href = "/auth/signin";
         }
       }
-    }
+
+      setIsInitializing(false);
+    };
+
+    initializeAuth();
   }, [dispatch]);
 
+  // Persist token and userId when auth state changes
   useEffect(() => {
     if (user.isAuthenticated) {
-      localStorage.setItem("eMadhyam-userData", JSON.stringify(user.user));
       localStorage.setItem("eMadhyam-token", user.token);
+      localStorage.setItem("eMadhyam-userId", user.user._id);
+    } else {
+      localStorage.removeItem("eMadhyam-token");
+      localStorage.removeItem("eMadhyam-userId");
     }
-  }, [user]);
+  }, [user.isAuthenticated, user.token, user.user._id]);
+
+  return { isInitializing };
 };

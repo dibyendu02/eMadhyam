@@ -1,8 +1,8 @@
-export enum ProductType {
-  Plant = "Plant",
-  Flower = "Flower",
-  Fruit = "Fruit",
-}
+// export enum ProductType {
+//   Plant = "Plant",
+//   Flower = "Flower",
+//   Fruit = "Fruit",
+// }
 
 export enum ProductSeason {
   Spring = "Spring",
@@ -11,28 +11,28 @@ export enum ProductSeason {
   Winter = "Winter",
 }
 
-export enum ProductColor {
-  DarkGreen = "Dark Green",
-  Gray = "Gray",
-  LightGreen = "Light Green",
-  Yellow = "Yellow",
-}
+// export enum ProductColor {
+//   DarkGreen = "Dark Green",
+//   Gray = "Gray",
+//   LightGreen = "Light Green",
+//   Yellow = "Yellow",
+// }
 
-export enum ProductPlantType {
-  AirPurifyingPlants = "Air Purifying Plants",
-  AromaticPlants = "Aromatic Plants",
-  CactiAndSucculents = "Cacti And Succulents",
-  FloweringPlants = "Flowering Plants",
-  HangingPlants = "Hanging Plants",
-  LowLightPlants = "Low Light Plants",
-  DroughtResistant = "Drought Resistant",
-}
+// export enum ProductPlantType {
+//   AirPurifyingPlants = "Air Purifying Plants",
+//   AromaticPlants = "Aromatic Plants",
+//   CactiAndSucculents = "Cacti And Succulents",
+//   FloweringPlants = "Flowering Plants",
+//   HangingPlants = "Hanging Plants",
+//   LowLightPlants = "Low Light Plants",
+//   DroughtResistant = "Drought Resistant",
+// }
 
-export enum ProductCategory {
-  IndoorPlants = "indoor-plants",
-  PotsAndPlanters = "pots-planters",
-  OutdoorPlants = "outdoor-plants",
-}
+// export enum ProductCategory {
+//   IndoorPlants = "indoor-plants",
+//   PotsAndPlanters = "pots-planters",
+//   OutdoorPlants = "outdoor-plants",
+// }
 
 export enum PriceRange {
   zero = 0,

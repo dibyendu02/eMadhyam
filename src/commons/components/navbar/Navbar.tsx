@@ -1,13 +1,13 @@
 import Image from "next/image";
-import React, { useState } from "react";
-import Button from "../button/Button";
+import { useState } from "react";
 import AppIcons from "../../../../public/icons/appIcons";
+import Button from "../button/Button";
 // Modified Navbar.tsx
-import { Menu } from "lucide-react";
-import MobileDrawer from "../MobileDrawer";
 import { useAppSelector } from "@/store/hooks";
-import { useRouter } from "next/navigation";
+import { Menu } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import MobileDrawer from "../MobileDrawer";
 
 const Navbar = () => {
   const router = useRouter();
@@ -46,6 +46,8 @@ const Navbar = () => {
         <Link href="/" className="hover:text-gray-700">
           <Image src="/logo.png" alt="logo" width={100} height={100} />
         </Link>
+
+        {/* <PaymentButton products={[]} amount={100} /> */}
 
         <div className="flex items-center gap-5">
           <div

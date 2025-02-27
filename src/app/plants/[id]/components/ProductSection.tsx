@@ -1,11 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addToCart } from "@/store/slices/cartSlice";
+import { addToCartAsync } from "@/store/slices/cartSlice";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import ProductSectionLoading from "./ProductSectionLoading";
+import toast from "react-hot-toast";
 
 const ProductSection: React.FC = ({}) => {
   const [quantity, setQuantity] = useState(1);
@@ -13,30 +14,60 @@ const ProductSection: React.FC = ({}) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { user } = useAppSelector((state) => state.user);
 
   const { currentProduct, loading, error } = useAppSelector(
     (state) => state.products
   );
+
   const cartItems = useAppSelector((state) => state.cart.items);
   const isInCart = cartItems.some((item) => item._id === currentProduct?._id);
 
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("handleAddToCart clicked");
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (isInCart) {
-      router.push("/cart");
+
+    if (!user?._id) {
+      toast.error("Please login to add to cart.", {
+        duration: 2000,
+      });
       return;
     }
-    console.log("Product being added:", currentProduct);
-    if (currentProduct != null) dispatch(addToCart(currentProduct));
+
+    try {
+      if (currentProduct == null) return;
+      await dispatch(
+        addToCartAsync({
+          product: currentProduct,
+          userId: user._id,
+        })
+      ).unwrap();
+      toast.success("Added to cart!", {
+        duration: 2000,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to add to cart. Please try again.";
+      toast.error(errorMessage, {
+        duration: 2000,
+      });
+      console.error("Cart sync error:", error);
+    }
   };
 
-  const handleBuyNowClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleBuyNowClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log("handleBuyNowClick clicked");
     e.stopPropagation();
     console.log("Buy now clicked");
     if (!isInCart) {
-      if (currentProduct != null) dispatch(addToCart(currentProduct));
+      if (currentProduct != null)
+        await dispatch(
+          addToCartAsync({
+            product: currentProduct,
+            userId: user._id,
+          })
+        ).unwrap();
     }
     console.log("Add to cart action dispatched");
     router.push(`/cart`);
