@@ -1,12 +1,12 @@
 import axiosInstance from "../config/axiosConfig";
 
 export const paymentService = {
-  createOrder: async (products: string[]) => {
+  createOrder: async (orderData: { 
+    products: { productId: string; quantity: number; }[]; 
+    paymentMethod: string; 
+  }) => {
     try {
-      const response = await axiosInstance.post("/orders", {
-        products,
-        paymentMethod: "online",
-      });
+      const response = await axiosInstance.post("/api/order", orderData);
       return response.data;
     } catch (error) {
       throw error;
@@ -20,7 +20,7 @@ export const paymentService = {
   }) => {
     try {
       const response = await axiosInstance.post(
-        "/orders/payment/verify",
+        "/api/order/payment/verify",
         paymentData
       );
       return response.data;

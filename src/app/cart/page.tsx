@@ -11,9 +11,11 @@ import {
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const CartPage = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const cartItems = useAppSelector((state) => state.cart.items);
   const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
   const totalAmount = useAppSelector((state) => state.cart.totalAmount);
@@ -185,7 +187,12 @@ const CartPage = () => {
                         You will save ₹{totalDiscount} on this order
                       </p>
                     </div>
-                    <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 mt-6">
+                    <button
+                      onClick={() => {
+                        router.push("checkout");
+                      }}
+                      className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 mt-6"
+                    >
                       Proceed to checkout
                     </button>
                   </div>

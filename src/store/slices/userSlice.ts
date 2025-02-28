@@ -1,4 +1,4 @@
-import { IUser } from "@/commons/types/profile";
+import { IUser, IAddress } from "@/commons/types/profile";
 import { AuthResponse } from "@/services/types/auth";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -33,14 +33,17 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action: PayloadAction<AuthResponse>) => {
-      state.user._id = action.payload.user._id; // Only set the user ID initially
+      state.user._id = action.payload.user._id;
       state.isAuthenticated = true;
       state.token = action.payload.token;
-      state.isLoading = true; // Set loading while we fetch full profile
+      state.isLoading = true;
     },
     updateUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
-      state.isLoading = false; // Profile loaded
+      state.isLoading = false;
+    },
+    updateToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
     },
     logout: () => {
       return initialState;
@@ -48,10 +51,23 @@ const userSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
+    addAddress: (state, action: PayloadAction<IAddress>) => {
+      state.user.address.push(action.payload);
+    },
+    removeAddress: (state, action: PayloadAction<number>) => {
+      state.user.address.splice(action.payload, 1);
+    },
   },
 });
 
-export const { loginSuccess, logout, updateUser, setLoading } =
-  userSlice.actions;
+export const {
+  loginSuccess,
+  logout,
+  updateUser,
+  setLoading,
+  updateToken,
+  addAddress,
+  removeAddress,
+} = userSlice.actions;
 
 export default userSlice.reducer;
