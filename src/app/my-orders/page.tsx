@@ -7,6 +7,7 @@ import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { orderService } from "@/services/api/orderService";
 import { Order, OrderStatus } from "@/commons/types/order";
@@ -51,35 +52,6 @@ const MyOrdersPage: React.FC = () => {
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setShowOrderDetails(true);
-  };
-
-  // Cancel an order
-  const handleCancelOrder = async (orderId: string) => {
-    try {
-      const response = await orderService.cancelOrder(orderId);
-
-      // Update the orders list
-      setOrders(
-        orders.map((order) =>
-          order._id === orderId
-            ? { ...order, status: "cancelled" as OrderStatus }
-            : order
-        )
-      );
-
-      // Update the selected order if it's the one being cancelled
-      if (selectedOrder && selectedOrder._id === orderId) {
-        setSelectedOrder({
-          ...selectedOrder,
-          status: "cancelled" as OrderStatus,
-        });
-      }
-
-      alert("Order cancelled successfully");
-    } catch (error) {
-      console.error("Failed to cancel order:", error);
-      alert("Failed to cancel order. Please try again.");
-    }
   };
 
   // Format date
@@ -141,7 +113,7 @@ const MyOrdersPage: React.FC = () => {
                 No orders found
               </h2>
               <p className="text-gray-600 mb-6">
-                You haven't placed any orders yet.
+                You haven&apos;t placed any orders yet.
               </p>
               <Link
                 href="/products"
@@ -232,14 +204,16 @@ const MyOrdersPage: React.FC = () => {
                             key={index}
                             className="flex items-center space-x-3"
                           >
-                            <div className="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-md overflow-hidden">
-                              <img
+                            <div className="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-md overflow-hidden relative">
+                              <Image
                                 src={
                                   item.productId.imageUrls[0] ||
                                   "/placeholder-product.png"
                                 }
                                 alt={item.productId.name}
-                                className="h-full w-full object-cover object-center"
+                                fill
+                                sizes="64px"
+                                className="object-cover object-center"
                               />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -420,14 +394,16 @@ const MyOrdersPage: React.FC = () => {
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md overflow-hidden">
-                                <img
+                              <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md overflow-hidden relative">
+                                <Image
                                   src={
                                     item.productId.imageUrls[0] ||
                                     "/placeholder-product.png"
                                   }
                                   alt={item.productId.name}
-                                  className="h-full w-full object-cover object-center"
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover object-center"
                                 />
                               </div>
                               <div className="ml-4">
@@ -482,8 +458,8 @@ const MyOrdersPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              {/* {selectedOrder.status !== "cancelled" &&
+              {/* Action Buttons - Commented out
+              {selectedOrder.status !== "cancelled" &&
                 selectedOrder.status !== "delivered" && (
                   <div className="mt-6 flex justify-end space-x-4">
                     <button

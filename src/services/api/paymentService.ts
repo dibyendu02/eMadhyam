@@ -2,7 +2,7 @@
 
 // src/services/api/paymentService.ts
 import axiosInstance from "../config/axiosConfig";
-import { IAddress } from "@/commons/types/profile";
+// import { IAddress } from "@/commons/types/profile";
 
 interface OrderData {
   products: Array<{

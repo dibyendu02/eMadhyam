@@ -38,6 +38,40 @@ interface OrderData {
   addressId: string; // Changed from address object to addressId
 }
 
+// Define RazorpayResponse interface to replace 'any'
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+  [key: string]: string;
+}
+
+// Define RazorpayOptions interface
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => Promise<void>;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+}
+
+// Define window with Razorpay
+interface WindowWithRazorpay extends Window {
+  Razorpay: new (options: RazorpayOptions) => {
+    open: () => void;
+  };
+}
+
 const CheckoutPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -101,7 +135,7 @@ const CheckoutPage = () => {
         quantity: item.quantity,
       })),
       paymentMethod,
-      addressId: addressId, 
+      addressId: addressId,
     };
 
     try {
@@ -116,23 +150,21 @@ const CheckoutPage = () => {
         }
 
         const { razorpayOrder } = orderResponse;
-        const options = {
+        const options: RazorpayOptions = {
           key: "rzp_test_X7LgvyRx65km1S",
           amount: razorpayOrder.amount,
           currency: "INR",
           name: "Your Store",
           description: "Order Payment",
           order_id: razorpayOrder.id,
-          handler: async function (response: any) {
+          handler: async function (response: RazorpayResponse) {
             try {
               // Include the orderId in the verification request
               const verificationData = {
                 ...response,
                 orderId: orderResponse.order._id, // Assuming the order ID is returned from createOrder
               };
-              const verifyResponse = await paymentService.verifyPayment(
-                verificationData
-              );
+              await paymentService.verifyPayment(verificationData);
               router.push("/order-success");
             } catch (error) {
               console.error("Payment verification failed", error);
@@ -151,7 +183,9 @@ const CheckoutPage = () => {
           },
         };
 
-        const rzp = new (window as any).Razorpay(options);
+        const rzp = new (window as unknown as WindowWithRazorpay).Razorpay(
+          options
+        );
         rzp.open();
       } else {
         router.push("/order-success");

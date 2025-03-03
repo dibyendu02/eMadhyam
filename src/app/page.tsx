@@ -1,6 +1,6 @@
 "use client";
 import Navbar from "@/commons/components/navbar/Navbar";
-import SubHeader from "@/commons/components/subheader/SubHeader";
+// import SubHeader from "@/commons/components/subheader/SubHeader";
 import CollectionsGrid from "@/components/collection/CollectionSection";
 import Footer from "@/components/footer/Footer";
 import HeroSection from "@/components/herosection/HeroSection";

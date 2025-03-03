@@ -1,4 +1,3 @@
-// src/services/api/api/orderervice.ts
 import axiosInstance from "../config/axiosConfig";
 import { 
   Order, 
@@ -6,11 +5,24 @@ import {
   UpdateOrderStatusPayload 
 } from "@/commons/types/order";
 
+// Define RazorpayOrder interface to replace 'any'
+interface RazorpayOrder {
+  id: string;
+  amount: number;
+  currency: string;
+  receipt?: string;
+  status?: string;
+}
+
 export const orderService = {
   // Create a new order
   createOrder: async (orderData: CreateOrderPayload) => {
     try {
-      const response = await axiosInstance.post<{ message: string; order: Order; razorpayOrder?: any }>('/api/order', orderData);
+      const response = await axiosInstance.post<{ 
+        message: string; 
+        order: Order; 
+        razorpayOrder?: RazorpayOrder 
+      }>('/api/order', orderData);
       return response.data;
     } catch (error) {
       console.error('Error creating order:', error);

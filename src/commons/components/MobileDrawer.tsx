@@ -22,7 +22,7 @@ interface MobileDrawerProps {
 const MobileDrawer: React.FC<MobileDrawerProps> = ({
   isOpen,
   onClose,
-  menuItems,
+  // menuItems,
 }) => {
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const router = useRouter();
