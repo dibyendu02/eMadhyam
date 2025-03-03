@@ -11,6 +11,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("eMadhyam-token");
+    console.log(token);
     if (token) {
       // Change from Authorization to token header
       config.headers.token = `Bearer ${token}`;

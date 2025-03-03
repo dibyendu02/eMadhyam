@@ -24,7 +24,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-white">
       <Navbar />
-      <SubHeader />
+      {/* <SubHeader /> */}
       <HeroSection />
       <CollectionsGrid />
       <NewArrivals />
