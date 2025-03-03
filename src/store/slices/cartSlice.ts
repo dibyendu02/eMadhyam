@@ -86,7 +86,7 @@ export const removeFromCartAsync = createAsyncThunk(
 
     try {
       // Save the original state before modification
-      const { cart } = getState() as { cart: CartState };
+      // const { cart } = getState() as { cart: CartState };
       // const originalItems = [...cart.items];
       
       // First update local state
