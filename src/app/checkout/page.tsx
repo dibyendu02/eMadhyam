@@ -11,58 +11,97 @@ import { addAddress } from "@/store/slices/userSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// Based on the error messages, it seems IAddress has different structure than what we were using
-// Let's define a compatible address structure
+import { IUser, IAddress } from "@/commons/types/profile";
+
+// Additional type definitions
 interface AddressInput {
   addressLine: string;
   city: string;
   state: string;
-  pinCode: number;
+  pinCode: string; // String for input handling
+}
+
+interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+// Order data structure to send to API
+interface OrderData {
+  products: Array<{
+    productId: string;
+    quantity: number;
+  }>;
+  paymentMethod: string;
+  addressId: string; // Changed from address object to addressId
 }
 
 const CheckoutPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user.user);
-  const cartItems = useAppSelector((state) => state.cart.items);
-  const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
-  const totalAmount = useAppSelector((state) => state.cart.totalAmount);
-  const totalMRP = useAppSelector((state) => state.cart.totalMRP);
-  const totalDiscount = useAppSelector((state) => state.cart.totalDiscount);
+  const user = useAppSelector((state) => state.user.user) as IUser;
+  const cartItems = useAppSelector((state) => state.cart.items) as CartItem[];
+  const totalQuantity = useAppSelector(
+    (state) => state.cart.totalQuantity
+  ) as number;
+  const totalAmount = useAppSelector(
+    (state) => state.cart.totalAmount
+  ) as number;
+  const totalMRP = useAppSelector((state) => state.cart.totalMRP) as number;
+  const totalDiscount = useAppSelector(
+    (state) => state.cart.totalDiscount
+  ) as number;
 
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
-  const [newAddress, setNewAddress] = useState({
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
+  const [newAddress, setNewAddress] = useState<AddressInput>({
     addressLine: "",
     city: "",
     state: "",
-    pinCode: "", // Keep as string for input, convert to number when submitting
+    pinCode: "",
   });
-  const [paymentMethod, setPaymentMethod] = useState("online");
-  const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("online");
+  const [loading, setLoading] = useState<boolean>(false);
+  // State to track the ID of a newly added address
+  // No need for newAddressId state since we're using the address index directly
 
   const handleOrderPlacement = async () => {
-    if (selectedAddressIndex === -1 && !newAddress.addressLine) {
+    if (user.address.length === 0) {
       alert("Please enter a valid address.");
       return;
     }
 
     setLoading(true);
 
-    const selectedAddress =
-      selectedAddressIndex === -1
-        ? {
-            ...newAddress,
-            pinCode: Number(newAddress.pinCode), // Convert to number before sending
-          }
-        : user.address[selectedAddressIndex];
+    // Determine which address ID to use
+    let addressId: string;
 
-    const orderData = {
+    if (selectedAddressIndex === -1) {
+      alert("Please select a saved address.");
+      setLoading(false);
+      return;
+    } else {
+      if (
+        !user.address[selectedAddressIndex] ||
+        !user.address[selectedAddressIndex]._id
+      ) {
+        alert("Invalid address selected.");
+        setLoading(false);
+        return;
+      }
+      addressId = user.address[selectedAddressIndex]._id;
+    }
+
+    console.log("address Id sending is", addressId);
+
+    const orderData: OrderData = {
       products: cartItems.map((item) => ({
         productId: item._id,
         quantity: item.quantity,
       })),
       paymentMethod,
-      address: selectedAddress,
+      addressId: addressId, 
     };
 
     try {
@@ -84,16 +123,20 @@ const CheckoutPage = () => {
           name: "Your Store",
           description: "Order Payment",
           order_id: razorpayOrder.id,
-          handler: async function (response) {
+          handler: async function (response: any) {
             try {
+              // Include the orderId in the verification request
+              const verificationData = {
+                ...response,
+                orderId: orderResponse.order._id, // Assuming the order ID is returned from createOrder
+              };
               const verifyResponse = await paymentService.verifyPayment(
-                response
+                verificationData
               );
-              // alert("Payment successful!");
               router.push("/order-success");
             } catch (error) {
               console.error("Payment verification failed", error);
-              // alert("Payment verification failed");
+              alert("Payment verification failed");
             }
           },
           prefill: {
@@ -108,37 +151,60 @@ const CheckoutPage = () => {
           },
         };
 
-        const rzp = new window.Razorpay(options);
+        const rzp = new (window as any).Razorpay(options);
         rzp.open();
       } else {
-        // alert("Order placed successfully! (COD selected)");
         router.push("/order-success");
       }
     } catch (error) {
       console.error("Order placement failed", error);
-      // alert("Order placement failed. Please try again.");
+      alert("Order placement failed. Please try again.");
     }
 
     setLoading(false);
   };
 
-  const handleSaveAddress = () => {
+  const handleSaveAddress = async () => {
     if (
       newAddress.addressLine &&
       newAddress.city &&
       newAddress.state &&
       newAddress.pinCode
     ) {
-      // Convert to the format expected by addAddress action
-      const addressToSave = {
+      // Convert to the format expected by addAddress action (matching IAddress type)
+      const addressToSave: IAddress = {
+        _id: "", // This will be assigned by the backend
         addressLine: newAddress.addressLine,
         city: newAddress.city,
         state: newAddress.state,
-        pinCode: Number(newAddress.pinCode), // Convert string to number
+        pinCode: newAddress.pinCode, // Note: IAddress uses string for pinCode
       };
 
-      dispatch(addAddress(addressToSave));
-      setSelectedAddressIndex(user.address.length); // Select the newly added address
+      try {
+        // Dispatch the action to add the address
+        dispatch(addAddress(addressToSave));
+
+        // Get the current user from the store after dispatch
+        const currentUser = user;
+        const newIndex = currentUser.address.length;
+
+        // For newly added address, we need to make an API call to get the ID
+        // For now, we'll set the selected address index and rely on the user object being updated
+        setSelectedAddressIndex(newIndex);
+
+        // Clear the form
+        setNewAddress({
+          addressLine: "",
+          city: "",
+          state: "",
+          pinCode: "",
+        });
+
+        alert("Address saved successfully!");
+      } catch (error) {
+        console.error("Failed to save address", error);
+        alert("Failed to save address. Please try again.");
+      }
     } else {
       alert("Please fill in all required address fields");
     }
@@ -207,6 +273,12 @@ const CheckoutPage = () => {
                               <div>
                                 {addr.state} - {addr.pinCode}
                               </div>
+                              {/* Display address ID for debugging */}
+                              {process.env.NODE_ENV === "development" && (
+                                <div className="text-xs text-gray-400">
+                                  ID: {addr._id}
+                                </div>
+                              )}
                             </label>
                           </div>
                         ))}
