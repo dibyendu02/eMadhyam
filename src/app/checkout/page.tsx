@@ -89,11 +89,11 @@ const CheckoutPage = () => {
               const verifyResponse = await paymentService.verifyPayment(
                 response
               );
-              alert("Payment successful!");
+              // alert("Payment successful!");
               router.push("/order-success");
             } catch (error) {
               console.error("Payment verification failed", error);
-              alert("Payment verification failed");
+              // alert("Payment verification failed");
             }
           },
           prefill: {
@@ -111,12 +111,12 @@ const CheckoutPage = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
-        alert("Order placed successfully! (COD selected)");
+        // alert("Order placed successfully! (COD selected)");
         router.push("/order-success");
       }
     } catch (error) {
       console.error("Order placement failed", error);
-      alert("Order placement failed. Please try again.");
+      // alert("Order placement failed. Please try again.");
     }
 
     setLoading(false);
