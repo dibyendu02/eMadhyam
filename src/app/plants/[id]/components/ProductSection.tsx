@@ -255,7 +255,7 @@ const ProductSection: React.FC = ({}) => {
           </button>
 
           {/* Highlights */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <p className="font-medium text-gray-900">Highlights</p>
             <ul className="space-y-2">
               <li className="flex items-center space-x-2">
@@ -265,7 +265,7 @@ const ProductSection: React.FC = ({}) => {
                 </span>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
