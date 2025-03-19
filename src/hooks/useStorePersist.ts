@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginSuccess, updateUser } from "@/store/slices/userSlice";
 import { ProfileService } from "@/services/api/profileService";
+import { initializeCartFromProfile } from "@/store/slices/cartSlice";
+import { initializeWishlistFromProfile } from "@/store/slices/wishlistSlice";
 
 export const useStorePersist = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +18,7 @@ export const useStorePersist = () => {
       const userId = localStorage.getItem("eMadhyam-userId");
 
       if (token && userId) {
+        // Initialize basic user data
         dispatch(
           loginSuccess({
             token,
@@ -36,8 +39,19 @@ export const useStorePersist = () => {
         );
 
         try {
+          // Fetch complete user profile
           const userData = await ProfileService.getProfile(userId);
           dispatch(updateUser(userData));
+
+          // Initialize cart from user profile
+          if (userData.cart && userData.cart.length > 0) {
+            dispatch(initializeCartFromProfile(userData.cart));
+          }
+
+          // Initialize wishlist from user profile
+          if (userData.wishlist && userData.wishlist.length > 0) {
+            dispatch(initializeWishlistFromProfile(userData.wishlist));
+          }
         } catch (error) {
           console.error("Error fetching user profile:", error);
           localStorage.removeItem("eMadhyam-token");

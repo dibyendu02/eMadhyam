@@ -33,10 +33,23 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action: PayloadAction<AuthResponse>) => {
-      state.user._id = action.payload.user._id;
+      // Set all user properties from the response
+      state.user = {
+        _id: action.payload.user._id,
+        email: action.payload.user.email,
+        firstName: action.payload.user.firstName,
+        lastName: action.payload.user.lastName,
+        phoneNumber: action.payload.user.phoneNumber || "",
+        gender: action.payload.user.gender || "male",
+        imageUrl: action.payload.user.imageUrl || "",
+        address: action.payload.user.address || [],
+        isAdmin: action.payload.user.isAdmin || false,
+        cart: action.payload.user.cart || [],
+        wishlist: action.payload.user.wishlist || [],
+      };
       state.isAuthenticated = true;
       state.token = action.payload.token;
-      state.isLoading = true;
+      state.isLoading = false; // Set loading to false since login is complete
     },
     updateUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
@@ -57,6 +70,13 @@ const userSlice = createSlice({
     removeAddress: (state, action: PayloadAction<number>) => {
       state.user.address.splice(action.payload, 1);
     },
+    // Add these reducers to handle cart and wishlist updates from profile
+    setCart: (state, action: PayloadAction<any[]>) => {
+      state.user.cart = action.payload;
+    },
+    setWishlist: (state, action: PayloadAction<any[]>) => {
+      state.user.wishlist = action.payload;
+    },
   },
 });
 
@@ -68,6 +88,8 @@ export const {
   updateToken,
   addAddress,
   removeAddress,
+  setCart,
+  setWishlist,
 } = userSlice.actions;
 
 export default userSlice.reducer;

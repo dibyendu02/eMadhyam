@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { CartItem, Product } from "@/commons/types/product";
 import { ProfileService } from "@/services/api/profileService";
+import { setCart } from "@/store/slices/userSlice";
 
 interface CartState {
   items: CartItem[];
@@ -48,7 +49,7 @@ export const addToCartAsync = createAsyncThunk(
   "cart/addToCartAsync",
   async (
     { product, userId }: { product: Product; userId?: string },
-    { getState, rejectWithValue, dispatch }
+    { rejectWithValue, dispatch }
   ) => {
     if (!userId) {
       return rejectWithValue("Please login to add items to cart");
@@ -58,17 +59,22 @@ export const addToCartAsync = createAsyncThunk(
       // First update local state
       dispatch(cartSlice.actions.addToCartLocal(product));
 
-      // Then sync with backend
-      const { cart } = getState() as { cart: CartState };
-      const formData = new FormData();
-      formData.append("cart", JSON.stringify(cart.items));
+      // Use the direct API call
+      const userData = await ProfileService.addToCart(userId, product._id);
 
-      const response = await ProfileService.updateProfile(userId, formData);
-      return response;
+      // Update user cart state in userSlice
+      if (userData && userData.cart) {
+        dispatch(setCart(userData.cart));
+      }
+
+      return userData;
     } catch (error) {
       // Revert local state if API fails
       dispatch(cartSlice.actions.removeFromCartLocal(product._id));
-      throw error;
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to add item to cart");
     }
   }
 );
@@ -78,35 +84,36 @@ export const removeFromCartAsync = createAsyncThunk(
   "cart/removeFromCartAsync",
   async (
     { productId, userId }: { productId: string; userId?: string },
-    { getState, rejectWithValue, dispatch }
+    { rejectWithValue, dispatch }
   ) => {
     if (!userId) {
       return rejectWithValue("Please login to remove items from cart");
     }
 
     try {
-      // Save the original state before modification
-      // const { cart } = getState() as { cart: CartState };
-      // const originalItems = [...cart.items];
-      
       // First update local state
       dispatch(cartSlice.actions.removeFromCartLocal(productId));
 
-      // Then sync with backend
-      const updatedCart = getState() as { cart: CartState };
-      const formData = new FormData();
-      formData.append("cart", JSON.stringify(updatedCart.cart.items));
+      // Use the direct API call
+      const userData = await ProfileService.removeFromCart(userId, productId);
 
-      const response = await ProfileService.updateProfile(userId, formData);
-      return response;
+      // Update user cart state in userSlice
+      if (userData && userData.cart) {
+        dispatch(setCart(userData.cart));
+      }
+
+      return userData;
     } catch (error) {
-      // Revert the state if API fails
       console.error("Error removing item from cart:", error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
       return rejectWithValue("Failed to remove item from cart");
     }
   }
 );
 
+// Async thunk for updating quantity
 export const updateQuantityAsync = createAsyncThunk(
   "cart/updateQuantityAsync",
   async (
@@ -125,34 +132,59 @@ export const updateQuantityAsync = createAsyncThunk(
       return rejectWithValue("Please login to update cart");
     }
 
-    // Save the original item quantity before modification
     const { cart } = getState() as { cart: CartState };
-    const originalItem = cart.items.find(item => item._id === id);
+    const originalItem = cart.items.find((item) => item._id === id);
     const originalQuantity = originalItem ? originalItem.quantity : 0;
 
     try {
       // First update local state
       dispatch(cartSlice.actions.updateQuantityLocal({ id, quantity }));
 
-      // Then sync with backend
-      const updatedCart = getState() as { cart: CartState };
-      const formData = new FormData();
-      formData.append("cart", JSON.stringify(updatedCart.cart.items));
+      // For quantity updates, we need a different approach
+      // Option 1: If quantity is increased by 1, add to cart
+      if (originalQuantity < quantity) {
+        const userData = await ProfileService.addToCart(userId, id);
+        // Update user cart state in userSlice
+        if (userData && userData.cart) {
+          dispatch(setCart(userData.cart));
+        }
+      }
+      // Option 2: If quantity is decreased by 1, remove from cart
+      else if (originalQuantity > quantity) {
+        const userData = await ProfileService.removeFromCart(userId, id);
+        // Update user cart state in userSlice
+        if (userData && userData.cart) {
+          dispatch(setCart(userData.cart));
+        }
+      }
 
-      const response = await ProfileService.updateProfile(userId, formData);
-      return response;
+      return { success: true };
     } catch (error) {
       // Revert to original quantity if API fails
-      console.error("Error updating quantity:", error);
-      // If we have the original quantity, revert to it
       if (originalQuantity) {
-        dispatch(cartSlice.actions.updateQuantityLocal({ id, quantity: originalQuantity }));
+        dispatch(
+          cartSlice.actions.updateQuantityLocal({
+            id,
+            quantity: originalQuantity,
+          })
+        );
+      }
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
       }
       return rejectWithValue("Failed to update item quantity");
     }
   }
 );
 
+// Initialize cart from user profile
+export const initializeCartFromProfile = createAsyncThunk(
+  "cart/initializeFromProfile",
+  async (cartItems: any[], { dispatch }) => {
+    dispatch(cartSlice.actions.setCartFromProfile(cartItems));
+    return cartItems;
+  }
+);
 
 const cartSlice = createSlice({
   name: "cart",
@@ -235,6 +267,10 @@ const cartSlice = createSlice({
       .addCase(updateQuantityAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      // Initialize cart from profile
+      .addCase(initializeCartFromProfile.fulfilled, (state) => {
+        state.isLoading = false;
       });
   },
 });

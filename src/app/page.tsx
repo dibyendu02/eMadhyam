@@ -12,6 +12,7 @@ import { fetchProducts } from "@/store/slices/productSlice";
 import React, { useEffect } from "react";
 
 import { fetchCategories } from "@/store/slices/categorySlice";
+import SubHeader from "@/commons/components/subheader/SubHeader";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-white">
       <Navbar />
-      {/* <SubHeader /> */}
+      <SubHeader />
       <HeroSection />
       <CollectionsGrid />
       <NewArrivals />

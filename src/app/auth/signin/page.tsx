@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import { loginSuccess, updateUser } from "@/store/slices/userSlice";
 import { ProfileService } from "@/services/api/profileService";
+import { initializeCartFromProfile } from "@/store/slices/cartSlice";
+import { initializeWishlistFromProfile } from "@/store/slices/wishlistSlice";
 
 const SignIn: React.FC = () => {
   const router = useRouter();
@@ -34,6 +36,15 @@ const SignIn: React.FC = () => {
 
       // Update Redux with complete profile data
       dispatch(updateUser(profileData));
+
+      // Initialize cart and wishlist data
+      if (profileData.cart && profileData.cart.length > 0) {
+        dispatch(initializeCartFromProfile(profileData.cart));
+      }
+
+      if (profileData.wishlist && profileData.wishlist.length > 0) {
+        dispatch(initializeWishlistFromProfile(profileData.wishlist));
+      }
 
       // Redirect to home page or dashboard
       router.push("/");
