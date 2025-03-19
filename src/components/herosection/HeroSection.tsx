@@ -1,10 +1,13 @@
 import Button from "@/commons/components/button/Button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const HeroSection = () => {
+  const navigate = useRouter();
   function handleClick(): void {
     // Implement your click handler
+    navigate.push("/collections/outdoor-plant");
   }
 
   return (

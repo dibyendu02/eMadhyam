@@ -77,6 +77,9 @@ const userSlice = createSlice({
     setWishlist: (state, action: PayloadAction<any[]>) => {
       state.user.wishlist = action.payload;
     },
+    resetUser: (state) => {
+      return initialState;
+    },
   },
 });
 
@@ -90,6 +93,7 @@ export const {
   removeAddress,
   setCart,
   setWishlist,
+  resetUser,
 } = userSlice.actions;
 
 export default userSlice.reducer;

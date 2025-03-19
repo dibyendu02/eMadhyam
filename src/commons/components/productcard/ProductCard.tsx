@@ -6,7 +6,7 @@ import {
   addToWishlistAsync,
   removeFromWishlistAsync,
 } from "@/store/slices/wishlistSlice";
-import { Heart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -17,6 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   className = "",
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -24,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const { items: wishlistItems, isLoading: wishlistLoading } = useAppSelector(
     (state) => state.wishlist
   );
-  const { isLoading: cartLoading } = useAppSelector((state) => state.cart);
+  const { items: cartItems } = useAppSelector((state) => state.cart);
 
   const handleNavigate = (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest("button")) {
@@ -33,6 +34,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const isInWishlist = wishlistItems.some((item) => item._id === product._id);
+
+  // Find product in cart and get its quantity
+  const productInCart = cartItems.find((item) => item._id === product._id);
+  const quantityInCart = productInCart ? productInCart.quantity : 0;
 
   const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -43,6 +48,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
 
     try {
+      setIsAddingToCart(true);
+
       await dispatch(
         addToCartAsync({
           product,
@@ -56,6 +63,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         { duration: 2000 }
       );
       console.error("Cart sync error:", error);
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -148,12 +157,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex items-center gap-2 md:gap-3 mt-auto">
             <button
               onClick={handleAddToCart}
-              disabled={cartLoading}
+              disabled={isAddingToCart}
               className={`flex-grow ${
-                cartLoading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
-              } text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors`}
+                isAddingToCart
+                  ? "bg-gray-400"
+                  : "bg-green-500 hover:bg-green-600"
+              } text-white py-2.5 px-4 rounded-lg text-xs md:text-sm font-medium transition-colors flex items-center justify-center gap-1`}
             >
-              {cartLoading ? "Adding..." : "Add to cart"}
+              {isAddingToCart ? (
+                "Adding..."
+              ) : (
+                <>
+                  <ShoppingCart size={16} />
+                  {quantityInCart > 0
+                    ? `Add (${quantityInCart} in cart)`
+                    : "Add to cart"}
+                </>
+              )}
             </button>
             <button
               className={`p-1.5 md:p-2.5 rounded-lg transition-all duration-300 ${

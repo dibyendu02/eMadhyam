@@ -207,10 +207,10 @@ const MyOrdersPage: React.FC = () => {
                             <div className="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-md overflow-hidden relative">
                               <Image
                                 src={
-                                  item.productId.imageUrls[0] ||
+                                  item.productId?.imageUrls[0] ||
                                   "/placeholder-product.png"
                                 }
-                                alt={item.productId.name}
+                                alt={item.productId?.name}
                                 fill
                                 sizes="64px"
                                 className="object-cover object-center"
@@ -218,10 +218,10 @@ const MyOrdersPage: React.FC = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-gray-900 truncate">
-                                {item.productId.name}
+                                {item.productId?.name}
                               </p>
                               <p className="text-sm text-gray-500">
-                                Qty: {item.quantity} × ₹{item.productId.price}
+                                Qty: {item.quantity} × ₹{item.productId?.price}
                               </p>
                             </div>
                           </div>
