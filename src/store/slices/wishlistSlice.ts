@@ -90,7 +90,7 @@ export const removeFromWishlistAsync = createAsyncThunk(
 // Initialize wishlist from user profile
 export const initializeWishlistFromProfile = createAsyncThunk(
   "wishlist/initializeFromProfile",
-  async (wishlistItems: any[], { dispatch }) => {
+  async (wishlistItems: Product[], { dispatch }) => {
     dispatch(wishlistSlice.actions.setWishlistFromProfile(wishlistItems));
     return wishlistItems;
   }

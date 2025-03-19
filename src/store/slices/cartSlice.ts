@@ -44,9 +44,16 @@ const calculateCartTotals = (items: CartItem[]) => {
   );
 };
 
+// Define basic types for cart items
+interface CartItemBase {
+  product?: unknown;
+  quantity?: number;
+  _id?: string;
+}
+
 // Helper function to process cart data from backend
 // This converts the flattened array from backend to an array with proper quantities
-const processCartItems = (cartItems: any[]): CartItem[] => {
+const processCartItems = (cartItems: unknown[]): CartItem[] => {
   if (!cartItems || !Array.isArray(cartItems)) {
     return [];
   }
@@ -54,12 +61,12 @@ const processCartItems = (cartItems: any[]): CartItem[] => {
   // Check if we're dealing with the new structured cart (objects with product and quantity)
   if (
     cartItems.length > 0 &&
-    cartItems[0].product &&
-    typeof cartItems[0].quantity === "number"
+    (cartItems[0] as CartItemBase).product &&
+    typeof (cartItems[0] as CartItemBase).quantity === "number"
   ) {
     return cartItems.map((item) => ({
-      ...item.product,
-      quantity: item.quantity,
+      ...((item as CartItemBase).product as Product),
+      quantity: (item as CartItemBase).quantity as number,
     }));
   }
 
@@ -68,16 +75,20 @@ const processCartItems = (cartItems: any[]): CartItem[] => {
   const productMap = new Map<string, CartItem>();
 
   cartItems.forEach((product) => {
-    if (!product || !product._id) return;
+    const productItem = product as CartItemBase;
+    if (!productItem || !productItem._id) return;
 
-    const id = product._id;
+    const id = productItem._id;
     if (productMap.has(id)) {
       // Increment quantity if product already exists
       const existingItem = productMap.get(id)!;
       existingItem.quantity += 1;
     } else {
       // Add new product with quantity 1
-      productMap.set(id, { ...product, quantity: 1 });
+      productMap.set(id, {
+        ...(productItem as unknown as Product),
+        quantity: 1,
+      });
     }
   });
 
@@ -210,7 +221,10 @@ export const updateQuantityAsync = createAsyncThunk(
       const quantityDiff = quantity - originalQuantity;
 
       // Helper function to execute repeated API calls
-      const executeAPICalls = async (apiFn: Function, times: number) => {
+      const executeAPICalls = async (
+        apiFn: (userId: string, productId: string) => Promise<unknown>,
+        times: number
+      ) => {
         const promises = Array(times)
           .fill(null)
           .map(() => apiFn(userId, id));
@@ -235,11 +249,13 @@ export const updateQuantityAsync = createAsyncThunk(
       }
 
       // Update user cart state in userSlice if changes were made
-      if (userData && userData.cart) {
+      if (userData && (userData as { cart?: unknown }).cart) {
         // Process the flattened cart data from backend
-        const processedCartItems = processCartItems(userData.cart);
+        const processedCartItems = processCartItems(
+          (userData as { cart: unknown[] }).cart
+        );
         dispatch(cartSlice.actions.setProcessedCart(processedCartItems));
-        dispatch(setCart(userData.cart));
+        dispatch(setCart((userData as { cart: unknown[] }).cart as Product[]));
       }
 
       return { success: true };
@@ -264,7 +280,7 @@ export const updateQuantityAsync = createAsyncThunk(
 // Initialize cart from user profile
 export const initializeCartFromProfile = createAsyncThunk(
   "cart/initializeFromProfile",
-  async (cartItems: any[], { dispatch }) => {
+  async (cartItems: unknown[], { dispatch }) => {
     // Process the cart data from backend
     const processedCartItems = processCartItems(cartItems);
     dispatch(cartSlice.actions.setProcessedCart(processedCartItems));

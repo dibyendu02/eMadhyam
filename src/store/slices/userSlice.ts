@@ -1,6 +1,7 @@
 import { IUser, IAddress } from "@/commons/types/profile";
 import { AuthResponse } from "@/services/types/auth";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Product } from "@/commons/types/product";
 
 interface UserState {
   user: IUser;
@@ -71,13 +72,13 @@ const userSlice = createSlice({
       state.user.address.splice(action.payload, 1);
     },
     // Add these reducers to handle cart and wishlist updates from profile
-    setCart: (state, action: PayloadAction<any[]>) => {
+    setCart: (state, action: PayloadAction<Product[]>) => {
       state.user.cart = action.payload;
     },
-    setWishlist: (state, action: PayloadAction<any[]>) => {
+    setWishlist: (state, action: PayloadAction<Product[]>) => {
       state.user.wishlist = action.payload;
     },
-    resetUser: (state) => {
+    resetUser: () => {
       return initialState;
     },
   },
