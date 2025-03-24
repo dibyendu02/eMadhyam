@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 
 import { IUser, IAddress } from "@/commons/types/profile";
-import { Product, CartItem } from "@/commons/types/product";
+import { CartItem } from "@/commons/types/product";
 
 // Only define types not already in your type files
 interface AddressInput {

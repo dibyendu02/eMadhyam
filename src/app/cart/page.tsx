@@ -90,7 +90,7 @@ const CartPage = () => {
                         </div>
                         <p className="text-sm">
                           Some items in your cart are not available for Cash on
-                          Delivery. You'll need to use online payment to
+                          Delivery. You&apos;ll need to use online payment to
                           complete this order.
                         </p>
                       </div>

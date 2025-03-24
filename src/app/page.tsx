@@ -7,7 +7,7 @@ import HeroSection from "@/components/herosection/HeroSection";
 import NewArrivals from "@/components/newarrivals/NewArrivals";
 import SaleBanner from "@/components/salebanner/SaleBanner";
 import TrendingAndBestSellers from "@/components/trending/TrndingSection";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppDispatch } from "@/store/hooks";
 import { fetchProducts } from "@/store/slices/productSlice";
 import React, { useEffect } from "react";
 
@@ -17,7 +17,6 @@ import SubHeader from "@/commons/components/subheader/SubHeader";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { loading: bannerLoading } = useAppSelector((state) => state.banners);
 
   useEffect(() => {
     dispatch(fetchProducts());

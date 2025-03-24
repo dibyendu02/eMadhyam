@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 const ProductSection: React.FC = ({}) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("Medium");
+  // const [selectedSize, setSelectedSize] = useState("Medium");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
