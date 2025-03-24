@@ -1,3 +1,4 @@
+// store/index.ts
 import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "./slices/cartSlice";
 import wishlistReducer from "./slices/wishlistSlice";
@@ -5,6 +6,7 @@ import userReducer from "./slices/userSlice";
 import productReducer from "./slices/productSlice";
 import categoryReducer from "./slices/categorySlice";
 import commonReducer from "./slices/commonSlice";
+import bannerReducer from "./slices/bannerSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,7 @@ export const store = configureStore({
     products: productReducer,
     categories: categoryReducer,
     common: commonReducer,
+    banners: bannerReducer,
   },
 });
 

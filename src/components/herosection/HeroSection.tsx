@@ -1,12 +1,16 @@
+// components/herosection/HeroSection.tsx
+"use client";
 import Button from "@/commons/components/button/Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useAppSelector } from "@/store/hooks";
 
 const HeroSection = () => {
   const navigate = useRouter();
+  const { mainBanner } = useAppSelector((state) => state.banners);
+
   function handleClick(): void {
-    // Implement your click handler
     navigate.push("/collections/outdoor-plant");
   }
 
@@ -17,7 +21,7 @@ const HeroSection = () => {
 
       {/* Background Image */}
       <Image
-        src="/images/hero_bg.png"
+        src={mainBanner?.imageUrl || "/images/hero_bg.png"}
         fill
         priority
         alt="hero"
