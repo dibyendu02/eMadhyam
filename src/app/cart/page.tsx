@@ -8,7 +8,7 @@ import {
   removeFromCartAsync,
   updateQuantityAsync,
 } from "@/store/slices/cartSlice";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,11 @@ const CartPage = () => {
   const handleRemoveItem = (id: string) => {
     dispatch(removeFromCartAsync({ productId: id, userId }));
   };
+
+  // Check if any product in cart doesn't support COD
+  const hasCodRestrictedItems = cartItems.some(
+    (item) => item.isCodAvailable === false
+  );
 
   return (
     <div className="flex flex-col bg-white">
@@ -75,6 +80,22 @@ const CartPage = () => {
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">
                       Shopping Cart ({totalQuantity} items)
                     </h2>
+
+                    {/* COD Warning Message if any item doesn't support COD */}
+                    {hasCodRestrictedItems && (
+                      <div className="mb-6 bg-orange-50 border border-orange-200 text-orange-800 p-4 rounded-md">
+                        <div className="flex items-center mb-2">
+                          <AlertCircle className="w-5 h-5 mr-2" />
+                          <span className="font-medium">Important Note</span>
+                        </div>
+                        <p className="text-sm">
+                          Some items in your cart are not available for Cash on
+                          Delivery. You'll need to use online payment to
+                          complete this order.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-6">
                       {cartItems.map((item) => (
                         <div
@@ -104,6 +125,12 @@ const CartPage = () => {
                                 <p className="mt-1 text-sm text-gray-500">
                                   {item.shortDescription}
                                 </p>
+                                {/* COD Badge */}
+                                {item.isCodAvailable === false && (
+                                  <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">
+                                    Online Payment Only
+                                  </span>
+                                )}
                               </div>
                               <button
                                 onClick={() => handleRemoveItem(item._id)}

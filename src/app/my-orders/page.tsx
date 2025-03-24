@@ -396,11 +396,8 @@ const MyOrdersPage: React.FC = () => {
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md overflow-hidden relative">
                                 <Image
-                                  src={
-                                    item.productId.imageUrls[0] ||
-                                    "/placeholder-product.png"
-                                  }
-                                  alt={item.productId.name}
+                                  src={item.productId?.imageUrls[0]}
+                                  alt={item.productId?.name}
                                   fill
                                   sizes="40px"
                                   className="object-cover object-center"
@@ -408,22 +405,22 @@ const MyOrdersPage: React.FC = () => {
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
-                                  {item.productId.name}
+                                  {item.productId?.name}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  {item.productId.category}
+                                  {item.productId?.category}
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
-                            ₹{item.productId.price}
+                            ₹{item.productId?.price}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                             {item.quantity}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-600">
-                            ₹{item.productId.price * item.quantity}
+                            ₹{item.productId?.price * item.quantity}
                           </td>
                         </tr>
                       ))}

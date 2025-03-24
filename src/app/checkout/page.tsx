@@ -4,41 +4,34 @@ import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api/paymentService";
 import { loadRazorpay } from "@/services/config/razorpayUtils";
 import { addAddress } from "@/store/slices/userSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 
 import { IUser, IAddress } from "@/commons/types/profile";
+import { Product, CartItem } from "@/commons/types/product";
 
-// Additional type definitions
+// Only define types not already in your type files
 interface AddressInput {
   addressLine: string;
   city: string;
   state: string;
-  pinCode: string; // String for input handling
+  pinCode: string;
 }
 
-interface CartItem {
-  _id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-// Order data structure to send to API
 interface OrderData {
   products: Array<{
     productId: string;
     quantity: number;
   }>;
   paymentMethod: string;
-  addressId: string; // Changed from address object to addressId
+  addressId: string;
 }
 
-// Define RazorpayResponse interface to replace 'any'
 interface RazorpayResponse {
   razorpay_payment_id: string;
   razorpay_order_id: string;
@@ -46,7 +39,6 @@ interface RazorpayResponse {
   [key: string]: string;
 }
 
-// Define RazorpayOptions interface
 interface RazorpayOptions {
   key: string;
   amount: number;
@@ -65,7 +57,6 @@ interface RazorpayOptions {
   };
 }
 
-// Define window with Razorpay
 interface WindowWithRazorpay extends Window {
   Razorpay: new (options: RazorpayOptions) => {
     open: () => void;
@@ -77,16 +68,15 @@ const CheckoutPage = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user) as IUser;
   const cartItems = useAppSelector((state) => state.cart.items) as CartItem[];
-  const totalQuantity = useAppSelector(
-    (state) => state.cart.totalQuantity
-  ) as number;
-  const totalAmount = useAppSelector(
-    (state) => state.cart.totalAmount
-  ) as number;
-  const totalMRP = useAppSelector((state) => state.cart.totalMRP) as number;
-  const totalDiscount = useAppSelector(
-    (state) => state.cart.totalDiscount
-  ) as number;
+  const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
+  const totalAmount = useAppSelector((state) => state.cart.totalAmount);
+  const totalMRP = useAppSelector((state) => state.cart.totalMRP);
+  const totalDiscount = useAppSelector((state) => state.cart.totalDiscount);
+
+  // Check if any product in cart doesn't support COD
+  const hasCodRestrictedItems = cartItems.some(
+    (item) => item.isCodAvailable === false
+  );
 
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
   const [newAddress, setNewAddress] = useState<AddressInput>({
@@ -97,8 +87,13 @@ const CheckoutPage = () => {
   });
   const [paymentMethod, setPaymentMethod] = useState<string>("online");
   const [loading, setLoading] = useState<boolean>(false);
-  // State to track the ID of a newly added address
-  // No need for newAddressId state since we're using the address index directly
+
+  // If there are COD-restricted items, enforce online payment
+  useEffect(() => {
+    if (hasCodRestrictedItems && paymentMethod === "cod") {
+      setPaymentMethod("online");
+    }
+  }, [hasCodRestrictedItems, paymentMethod]);
 
   const handleOrderPlacement = async () => {
     if (user.address.length === 0) {
@@ -162,7 +157,7 @@ const CheckoutPage = () => {
               // Include the orderId in the verification request
               const verificationData = {
                 ...response,
-                orderId: orderResponse.order._id, // Assuming the order ID is returned from createOrder
+                orderId: orderResponse.order._id,
               };
               await paymentService.verifyPayment(verificationData);
               router.push("/order-success");
@@ -205,13 +200,13 @@ const CheckoutPage = () => {
       newAddress.state &&
       newAddress.pinCode
     ) {
-      // Convert to the format expected by addAddress action (matching IAddress type)
+      // Convert to the format expected by addAddress action
       const addressToSave: IAddress = {
         _id: "", // This will be assigned by the backend
         addressLine: newAddress.addressLine,
         city: newAddress.city,
         state: newAddress.state,
-        pinCode: newAddress.pinCode, // Note: IAddress uses string for pinCode
+        pinCode: newAddress.pinCode,
       };
 
       try {
@@ -222,8 +217,7 @@ const CheckoutPage = () => {
         const currentUser = user;
         const newIndex = currentUser.address.length;
 
-        // For newly added address, we need to make an API call to get the ID
-        // For now, we'll set the selected address index and rely on the user object being updated
+        // For newly added address, set the selected address index
         setSelectedAddressIndex(newIndex);
 
         // Clear the form
@@ -436,6 +430,35 @@ const CheckoutPage = () => {
                     <h3 className="text-lg font-medium text-gray-900 mb-4">
                       Payment Method
                     </h3>
+
+                    {/* COD Warning Message */}
+                    {hasCodRestrictedItems && (
+                      <div className="mb-4 bg-orange-50 border border-orange-200 text-orange-800 p-4 rounded-md">
+                        <div className="flex items-center mb-2">
+                          <AlertCircle className="w-5 h-5 mr-2" />
+                          <span className="font-medium">
+                            Cash on Delivery not available
+                          </span>
+                        </div>
+                        <p className="text-sm">
+                          Some items in your cart do not support Cash on
+                          Delivery. Please use online payment.
+                        </p>
+                        <div className="mt-2 text-xs">
+                          <p className="font-medium mb-1">
+                            Items not eligible for COD:
+                          </p>
+                          <ul className="pl-5 list-disc">
+                            {cartItems
+                              .filter((item) => item.isCodAvailable === false)
+                              .map((item) => (
+                                <li key={item._id}>{item.name}</li>
+                              ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-4">
                       <div className="flex items-start">
                         <input
@@ -468,15 +491,31 @@ const CheckoutPage = () => {
                           checked={paymentMethod === "cod"}
                           onChange={() => setPaymentMethod("cod")}
                           className="mt-1 mr-3"
+                          disabled={hasCodRestrictedItems}
                         />
                         <label
                           htmlFor="cod-payment"
-                          className="text-sm text-gray-700"
+                          className={`text-sm ${
+                            hasCodRestrictedItems
+                              ? "text-gray-400"
+                              : "text-gray-700"
+                          }`}
                         >
                           <div className="font-medium">Cash on Delivery</div>
-                          <div className="text-gray-500">
+                          <div
+                            className={
+                              hasCodRestrictedItems
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                            }
+                          >
                             Pay when you receive your order
                           </div>
+                          {hasCodRestrictedItems && (
+                            <div className="text-red-500 text-xs mt-1">
+                              Not available for some items in your cart
+                            </div>
+                          )}
                         </label>
                       </div>
                     </div>
@@ -498,9 +537,16 @@ const CheckoutPage = () => {
                         key={item._id}
                         className="flex justify-between text-sm"
                       >
-                        <span className="text-gray-600">
-                          {item.name} × {item.quantity}
-                        </span>
+                        <div className="text-gray-600 flex-1 pr-2">
+                          <span>
+                            {item.name} × {item.quantity}
+                          </span>
+                          {item.isCodAvailable === false && (
+                            <span className="inline-block ml-2 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                              Online only
+                            </span>
+                          )}
+                        </div>
                         <span className="font-medium">
                           ₹{item.price * item.quantity}
                         </span>

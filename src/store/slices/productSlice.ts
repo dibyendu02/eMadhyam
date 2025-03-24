@@ -62,6 +62,17 @@ const productSlice = createSlice({
     clearCurrentProduct: (state) => {
       state.currentProduct = null;
     },
+    // If you need to update a product manually (e.g. for testing)
+    updateProductCodAvailability: (state, action) => {
+      const { productId, isCodAvailable } = action.payload;
+      const product = state.items.find((item) => item._id === productId);
+      if (product) {
+        product.isCodAvailable = isCodAvailable;
+      }
+      if (state.currentProduct && state.currentProduct._id === productId) {
+        state.currentProduct.isCodAvailable = isCodAvailable;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -106,5 +117,6 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearCurrentProduct } = productSlice.actions;
+export const { clearCurrentProduct, updateProductCodAvailability } =
+  productSlice.actions;
 export default productSlice.reducer;

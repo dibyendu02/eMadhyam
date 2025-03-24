@@ -9,6 +9,7 @@ export interface ProductCardProps {
   className?: string;
 }
 
+// types/product.ts
 export interface Product {
   _id: string;
   name: string;
@@ -30,6 +31,7 @@ export interface Product {
   sunlightRequirement?: string;
   isBestseller?: boolean;
   isTrending?: boolean;
+  isCodAvailable?: boolean; // Add this property for COD availability
   productType?: ProductType;
   plantType?: PlantType;
   reviews?: number;

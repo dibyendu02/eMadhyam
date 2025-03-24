@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToCartAsync } from "@/store/slices/cartSlice";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -60,6 +60,14 @@ const ProductSection: React.FC = ({}) => {
     console.log("handleBuyNowClick clicked");
     e.stopPropagation();
     console.log("Buy now clicked");
+
+    if (!user?._id) {
+      toast.error("Please login to continue.", {
+        duration: 2000,
+      });
+      return;
+    }
+
     if (!isInCart) {
       if (currentProduct != null)
         await dispatch(
@@ -155,31 +163,44 @@ const ProductSection: React.FC = ({}) => {
         </div>
 
         {/* Right column - Product details */}
-        <div className="space-y-6">
+        <div className="space-y-6 ">
           <h1 className="text-2xl font-semibold text-gray-900">
             {currentProduct?.name}
           </h1>
 
           <p className="text-gray-600">{currentProduct?.shortDescription}</p>
 
-          {/* Rating */}
-          {/* <div className="flex items-center space-x-2">
-            <div className="flex">
-              {[...Array(5)].map((_, idx) => (
-                <Star
-                  key={idx}
-                  className={`w-5 h-5 ${
-                    idx < Math.floor(currentProduct?.rating)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-200"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-gray-700">
-              ({currentProduct?.rating} | {currentProduct?.reviews} reviews)
-            </span>
-          </div> */}
+          {/* Tags - Now includes COD availability */}
+          <div className="flex flex-wrap gap-2">
+            {currentProduct?.isBestseller && (
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
+                Best Seller
+              </span>
+            )}
+            {currentProduct?.isTrending && (
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                Trending
+              </span>
+            )}
+            {currentProduct?.inStock ? (
+              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                In Stock
+              </span>
+            ) : (
+              <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+                Out of Stock
+              </span>
+            )}
+            {currentProduct?.isCodAvailable ? (
+              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                COD Available
+              </span>
+            ) : (
+              <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded">
+                No COD
+              </span>
+            )}
+          </div>
 
           {/* Price */}
           <div className="flex items-baseline space-x-2">
@@ -187,7 +208,7 @@ const ProductSection: React.FC = ({}) => {
               ₹{currentProduct?.originalPrice}
             </span>
             <span className="text-green-600 font-semibold text-xl">
-              ₹{currentProduct?.originalPrice}
+              ₹{currentProduct?.price}
             </span>
             <span className="text-red-500">
               ({currentProduct?.discountPercentage}% off)
@@ -195,7 +216,7 @@ const ProductSection: React.FC = ({}) => {
           </div>
 
           {/* Size Selector */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <p className="font-medium text-gray-900">Select Plant Size</p>
             <div className="flex space-x-2">
               {["Small", "Medium", "Large"].map((size) => (
@@ -212,16 +233,33 @@ const ProductSection: React.FC = ({}) => {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Stock Status */}
           <div className="flex items-center space-x-2 text-green-600">
-            <Check className="w-5 h-5" />
-            <span>{currentProduct?.inStock ? "In Stock" : "Out of Stock"}</span>
+            {currentProduct?.inStock ? (
+              <>
+                <Check className="w-5 h-5" />
+                <span>In Stock</span>
+              </>
+            ) : (
+              <>
+                <X className="w-5 h-5 text-red-600" />
+                <span className="text-red-600">Out of Stock</span>
+              </>
+            )}
           </div>
 
+          {/* COD Warning Message */}
+          {!currentProduct?.isCodAvailable && (
+            <div className="bg-orange-50 border border-orange-200 text-orange-800 p-3 rounded-md text-sm">
+              This product is not available for cash on delivery. Please use
+              online payment.
+            </div>
+          )}
+
           {/* Quantity Selector */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ">
             <span className="text-gray-700">Qty.</span>
             <div className="flex items-center border rounded">
               <button
@@ -244,28 +282,17 @@ const ProductSection: React.FC = ({}) => {
           <button
             className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
             onClick={handleAddToCart}
+            disabled={!currentProduct?.inStock}
           >
             {isInCart ? "Go to Cart" : "Add to Cart"}
           </button>
           <button
             className="w-full border border-gray-200 py-3 rounded text-gray-700 hover:bg-gray-50"
             onClick={handleBuyNowClick}
+            disabled={!currentProduct?.inStock}
           >
             Buy Now
           </button>
-
-          {/* Highlights */}
-          {/* <div className="space-y-2">
-            <p className="font-medium text-gray-900">Highlights</p>
-            <ul className="space-y-2">
-              <li className="flex items-center space-x-2">
-                <Check className="w-5 h-5 text-green-600" />
-                <span className="text-gray-700">
-                  {currentProduct?.description}
-                </span>
-              </li>
-            </ul>
-          </div> */}
         </div>
       </div>
     </div>
