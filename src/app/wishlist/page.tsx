@@ -3,7 +3,9 @@
 import Navbar from "@/commons/components/navbar/Navbar";
 import ProductCard from "@/commons/components/productcard/ProductCard";
 import SubHeader from "@/commons/components/subheader/SubHeader";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 import Footer from "@/components/footer/Footer";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
 import { useAppSelector } from "@/store/hooks";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
@@ -88,6 +90,8 @@ const WishlistPage = () => {
           </div>
         )}
       </div>
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
       <Footer />
     </div>
   );

@@ -24,7 +24,7 @@ const transformCategoryToCollection = (category: CategoryType): Collection => {
     id: category._id,
     title: category.name,
     slug: category.name.toLowerCase().replace(/\s+/g, "-"),
-    imageUrl: AppImages.plantImg1,
+    imageUrl: AppImages.catgoeryIcon,
     featured: true,
   };
 };

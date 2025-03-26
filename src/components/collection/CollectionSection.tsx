@@ -29,17 +29,18 @@ const CollectionCard: React.FC<CollectionCardProps> = ({ collection }) => {
   };
 
   return (
-    <div className="block" onClick={() => onCollectionCardClick(collection)}>
+    <div className="block " onClick={() => onCollectionCardClick(collection)}>
       <div className="group relative flex flex-col">
         {/* Image Container */}
         <div className="relative mb-3 overflow-hidden rounded-full sm:rounded-lg bg-gray-50">
-          <div className="h-[100px] w-[100px] md:h-auto md:w-full md:aspect-square">
+          {/* Use proper aspect ratio container */}
+          <div className="h-[100px] w-[100px] md:h-[250px] md:w-[250px] relative">
             <Image
               src={collection.imageUrl}
               alt={collection.title}
-              height={400}
-              width={400}
-              className="h-[100px] w-[100px] md:h-auto md:w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-300 scale-50 group-hover:scale-75"
+              sizes="(max-width: 640px) 100px, 250px"
               priority
             />
           </div>
@@ -72,7 +73,7 @@ const CollectionsGrid: React.FC<CollectionsGridProps> = ({
 
   if (loading) {
     return (
-      <section className="w-full max-w-7xl mx-auto px-4 py-12">
+      <section className="w-full max-w-7xl mx-auto px-4 py-12 ">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
@@ -103,18 +104,18 @@ const CollectionsGrid: React.FC<CollectionsGridProps> = ({
   }
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4  py-12">
+    <section className="w-full max-w-7xl mx-auto px-4 py-3  md:py-12 ">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className=" hidden md:flex items-center justify-between mb-8">
         <h2 className="text-xl font-medium text-gray-900 sm:text-2xl">
           Collections
         </h2>
-        <Link
+        {/* <Link
           href="/collections"
           className="text-sm font-medium text-green-600 hover:text-green-700"
         >
           View all
-        </Link>
+        </Link> */}
       </div>
 
       {/* Collection Grid */}

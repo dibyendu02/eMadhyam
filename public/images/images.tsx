@@ -8,4 +8,5 @@ export const AppImages = {
   plantImg7: require("./plant7.jpg"),
   heroImg: require("./hero_bg.png"),
   saleBannerImg: require("./sale-banner.png"),
+  catgoeryIcon: require("./category-icon.png"),
 };

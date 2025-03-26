@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import { clearCart } from "@/store/slices/cartSlice";
 import { CheckCircle } from "lucide-react";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 const OrderSuccessPage = () => {
   const dispatch = useAppDispatch();
@@ -87,7 +89,8 @@ const OrderSuccessPage = () => {
           </div>
         </div>
       </div>
-
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
       <Footer />
     </div>
   );

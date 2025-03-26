@@ -11,6 +11,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { orderService } from "@/services/api/orderService";
 import { Order, OrderStatus } from "@/commons/types/order";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 const MyOrdersPage: React.FC = () => {
   const user = useAppSelector((state) => state.user.user) as IUser;
@@ -23,30 +25,23 @@ const MyOrdersPage: React.FC = () => {
   // Fetch orders on component mount
   useEffect(() => {
     const fetchOrders = async () => {
-      //   if (!user._id) {
-      //     console.log("User not found");
-      //     router.push("/auth/signin");
-      //     return;
-      //   }
-
-      if (user._id != "") {
-        console.log("userId is", user._id);
+      if (user._id) {
         try {
           setLoading(true);
           const data = await orderService.getUserOrders(user._id);
-          console.log("get order api called");
-          console.log(data);
           setOrders(data);
         } catch (error) {
           console.error("Failed to fetch orders:", error);
         } finally {
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
 
     fetchOrders();
-  }, [user._id, router]);
+  }, [user._id]);
 
   // View order details
   const handleViewDetails = (order: Order) => {
@@ -107,6 +102,46 @@ const MyOrdersPage: React.FC = () => {
             <div className="flex justify-center items-center h-40">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
             </div>
+          ) : !user._id ? (
+            // Display login prompt when no user data is available
+            <div className="bg-white rounded-lg shadow p-8 text-center">
+              <div className="mb-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-16 w-16 text-gray-400 mx-auto"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-medium text-gray-900 mb-4">
+                Please login to view your orders
+              </h2>
+              <p className="text-gray-600 mb-6">
+                You need to be logged in to access your order history.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link
+                  href="/auth/signin"
+                  className="inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="inline-block border border-gray-300 bg-white text-gray-700 px-6 py-3 rounded-md hover:bg-gray-50"
+                >
+                  Create an Account
+                </Link>
+              </div>
+            </div>
           ) : orders.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <h2 className="text-xl font-medium text-gray-900 mb-4">
@@ -116,7 +151,7 @@ const MyOrdersPage: React.FC = () => {
                 You haven&apos;t placed any orders yet.
               </p>
               <Link
-                href="/products"
+                href="/"
                 className="inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700"
               >
                 Start Shopping
@@ -161,6 +196,8 @@ const MyOrdersPage: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Rest of the component remains the same */}
+                  {/* ... */}
                   {/* Order Summary */}
                   <div className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row justify-between">
@@ -485,7 +522,8 @@ const MyOrdersPage: React.FC = () => {
           </div>
         </div>
       )}
-
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
       <Footer />
     </div>
   );

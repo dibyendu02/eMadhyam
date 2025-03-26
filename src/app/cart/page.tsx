@@ -12,6 +12,8 @@ import { AlertCircle, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 const CartPage = () => {
   const dispatch = useAppDispatch();
@@ -230,6 +232,8 @@ const CartPage = () => {
         </div>
       </div>
       <Footer />
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
     </div>
   );
 };

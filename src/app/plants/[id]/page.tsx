@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import ProductSection from "./components/ProductSection";
 import RelatedProducts from "./components/RelatedProducts";
 import TabbedInterface from "./components/TabSection";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 const ProductPage = () => {
   const params = useParams();
@@ -47,6 +49,8 @@ const ProductPage = () => {
       {relatedProducts.length > 0 && (
         <RelatedProducts products={relatedProducts} />
       )}
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
       <Footer />
     </div>
   );

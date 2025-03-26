@@ -14,6 +14,8 @@ import { AlertCircle } from "lucide-react";
 
 import { IUser, IAddress } from "@/commons/types/profile";
 import { CartItem } from "@/commons/types/product";
+import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
+import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 // Only define types not already in your type files
 interface AddressInput {
@@ -587,6 +589,8 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      <WhatsAppButton phoneNumber="919641131615" />
+      <BottomNavbar />
       <Footer />
     </div>
   );
