@@ -4,7 +4,7 @@ import Navbar from "@/commons/components/navbar/Navbar";
 import CollectionsGrid from "@/components/collection/CollectionSection";
 import Footer from "@/components/footer/Footer";
 import HeroSection from "@/components/herosection/HeroSection";
-import NewArrivals from "@/components/newarrivals/NewArrivals";
+// import NewArrivals from "@/components/newarrivals/NewArrivals";
 import SaleBanner from "@/components/salebanner/SaleBanner";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchProducts } from "@/store/slices/productSlice";

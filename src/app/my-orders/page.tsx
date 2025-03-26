@@ -8,7 +8,7 @@ import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { orderService } from "@/services/api/orderService";
 import { Order, OrderStatus } from "@/commons/types/order";
 import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
@@ -16,7 +16,7 @@ import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
 
 const MyOrdersPage: React.FC = () => {
   const user = useAppSelector((state) => state.user.user) as IUser;
-  const router = useRouter();
+  // const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);

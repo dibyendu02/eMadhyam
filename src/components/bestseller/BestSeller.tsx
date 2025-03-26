@@ -1,7 +1,7 @@
 import ProductCardLoading from "@/commons/components/productcard/components/ProductCardLoading";
 import ProductCard from "@/commons/components/productcard/ProductCard";
 import { useAppSelector } from "@/store/hooks";
-import { ChevronRight } from "lucide-react";
+// import { ChevronRight } from "lucide-react";
 
 const BestsellerSection: React.FC = () => {
   const {

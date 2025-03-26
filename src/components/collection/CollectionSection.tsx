@@ -1,7 +1,7 @@
 import { Collection } from "@/commons/types/collection";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { fetchProductsByCategoryId } from "@/store/slices/productSlice";
