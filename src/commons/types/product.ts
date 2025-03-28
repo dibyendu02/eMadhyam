@@ -59,7 +59,9 @@ export interface ColorType {
 
 export interface ProductType {
   _id: string;
+  id?: string;
   name: string;
+  slug: string;
   __v: number;
 }
 

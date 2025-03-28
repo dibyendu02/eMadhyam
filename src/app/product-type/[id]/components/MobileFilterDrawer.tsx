@@ -1,4 +1,4 @@
-// src/app/collections/[id]/components/MobileFilterDrawer.tsx
+// src/app/product-types/[id]/components/MobileFilterDrawer.tsx
 import React from "react";
 import { X } from "lucide-react";
 import { FilterState } from "../page";

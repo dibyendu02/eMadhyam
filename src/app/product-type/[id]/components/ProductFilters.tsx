@@ -1,4 +1,4 @@
-// src/app/collections/[id]/components/ProductFilters.tsx
+// src/app/product-types/[id]/components/ProductFilters.tsx
 import { ProductSeason, PriceRange, PriceRanges } from "@/commons/constants";
 import React from "react";
 import { FilterState } from "../page";

@@ -15,7 +15,7 @@ const HeroSection = () => {
   }
 
   return (
-    <div className="h-[40vh] w-full relative overflow-hidden">
+    <div className="h-[50vh] md:h-[100vh] w-full relative overflow-hidden">
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent z-10" />
 
@@ -31,7 +31,7 @@ const HeroSection = () => {
 
       {/* Content Container */}
       <div className="absolute inset-0 flex items-center z-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8  pt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8  pt-20 md:pt-0">
           <div className="max-w-2xl space-y-8 animate-slide-up">
             {/* Main Heading */}
             <h1 className="text-white text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight">

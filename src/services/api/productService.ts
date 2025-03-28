@@ -52,6 +52,25 @@ export class ProductService {
     }
   }
 
+  static async getProductByProductTypeId(id: string): Promise<Product[]> {
+    try {
+      const response = await axiosInstance.get<Product[]>(
+        `/api/product/type/${id}`
+      );
+
+      return response.data;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(
+            error.response.data.error || "Failed to fetch products by type"
+          );
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
+
   static async getAllCategory(): Promise<CategoryType[]> {
     try {
       const response = await axiosInstance.get<CategoryType[]>(`/api/category`);

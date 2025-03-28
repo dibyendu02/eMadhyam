@@ -1,18 +1,18 @@
-// src/app/collections/[id]/components/CollectionHeader.tsx
+// src/app/product-types/[id]/components/ProductTypeHeader.tsx
 import React from "react";
 import Link from "next/link";
 import { ChevronDown, Filter } from "lucide-react";
 
-interface CollectionHeaderProps {
-  categoryName: string;
+interface ProductTypeHeaderProps {
+  productTypeName: string;
   productCount: number;
   onSortChange: (value: string) => void;
   currentSort: string;
   setFilterDrawerOpen: (value: boolean) => void;
 }
 
-const CollectionHeader: React.FC<CollectionHeaderProps> = ({
-  categoryName,
+const ProductTypeHeader: React.FC<ProductTypeHeaderProps> = ({
+  productTypeName,
   productCount,
   onSortChange,
   currentSort,
@@ -27,14 +27,14 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
             Home
           </Link>
           <span className="mx-2">/</span>
-          {/* <Link href="/plants" className="hover:text-gray-700"> */}
-          Plants
-          {/* </Link> */}
+          <Link href="/plants" className="hover:text-gray-700">
+            Plants
+          </Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">Categories</span>
+          <span className="text-gray-900">Product Types</span>
         </nav>
 
-        <div className="md:hidden sticky top-0 z-10  pb-4">
+        <div className="md:hidden sticky top-0 z-10 pb-4">
           <button
             onClick={() => setFilterDrawerOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg"
@@ -47,7 +47,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
         {/* Header Content */}
         <div className="flex items-center justify-end md:justify-between">
           <h1 className="hidden md:block text-2xl font-semibold text-gray-900">
-            {categoryName}
+            {productTypeName}
           </h1>
 
           <div className="flex flex-1 md:flex-none justify-between md:justify-start items-center gap-4 ">
@@ -75,4 +75,4 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
   );
 };
 
-export default CollectionHeader;
+export default ProductTypeHeader;

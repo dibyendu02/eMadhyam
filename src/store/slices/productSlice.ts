@@ -7,6 +7,7 @@ interface ProductState {
   items: Product[];
   currentProduct: Product | null;
   categoryProducts: Product[];
+  typeProducts: Product[]; // Added for product type filtering
   loading: boolean;
   error: string | null;
 }
@@ -14,6 +15,7 @@ interface ProductState {
 const initialState: ProductState = {
   items: [],
   categoryProducts: [],
+  typeProducts: [], // Initialize the new state for type products
   currentProduct: null,
   loading: false,
   error: null,
@@ -48,6 +50,19 @@ export const fetchProductsByCategoryId = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const products = await ProductService.getProductByCategoryId(id);
+      return products;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+// New thunk for fetching products by product type
+export const fetchProductsByProductType = createAsyncThunk(
+  "products/fetchByProductType",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const products = await ProductService.getProductByProductTypeId(id);
       return products;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -111,6 +126,19 @@ const productSlice = createSlice({
         state.categoryProducts = action.payload;
       })
       .addCase(fetchProductsByCategoryId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Handle fetchProductsByProductType cases
+      .addCase(fetchProductsByProductType.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductsByProductType.fulfilled, (state, action) => {
+        state.loading = false;
+        state.typeProducts = action.payload;
+      })
+      .addCase(fetchProductsByProductType.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

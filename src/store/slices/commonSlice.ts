@@ -3,6 +3,11 @@ import { ColorType, PlantType, ProductType } from "@/commons/types/product";
 import { CommonService } from "@/services/api/commonService";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
+// Helper function to create a slug from a string
+const createSlugFromName = (name: string): string => {
+  return name.toLowerCase().replace(/\s+/g, "-");
+};
+
 interface CommonState {
   colors: ColorType[];
   productTypes: ProductType[];
@@ -36,7 +41,16 @@ export const fetchProductTypes = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const productTypes = await CommonService.getAllProductTypes();
-      return productTypes;
+
+      // Add slug property to product types if it doesn't exist
+      const typesWithSlugs = productTypes.map((type) => ({
+        ...type,
+        slug: type.slug || createSlugFromName(type.name),
+        // Ensure id exists (some APIs might return _id instead of id)
+        id: type.id || type._id,
+      }));
+
+      return typesWithSlugs;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }

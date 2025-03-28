@@ -1,4 +1,4 @@
-// src/app/collections/[id]/components/ProductGrid.tsx
+// src/app/product-types/[id]/components/ProductGrid.tsx
 import React from "react";
 import ProductCard from "@/commons/components/productcard/ProductCard";
 import { Product } from "@/commons/types/product";
