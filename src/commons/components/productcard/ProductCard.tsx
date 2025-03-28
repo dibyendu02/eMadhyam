@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const { items: wishlistItems, isLoading: wishlistLoading } = useAppSelector(
     (state) => state.wishlist
   );
-  const { items: cartItems } = useAppSelector((state) => state.cart);
+  // const { items: cartItems } = useAppSelector((state) => state.cart);
 
   const handleNavigate = (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest("button")) {
@@ -36,8 +36,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const isInWishlist = wishlistItems.some((item) => item._id === product._id);
 
   // Find product in cart and get its quantity
-  const productInCart = cartItems.find((item) => item._id === product._id);
-  const quantityInCart = productInCart ? productInCart.quantity : 0;
+  // const productInCart = cartItems.find((item) => item._id === product._id);
+  // const quantityInCart = productInCart ? productInCart.quantity : 0;
 
   const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -106,14 +106,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleNavigate}
     >
-      <div className="p-2 md:p-4 flex flex-col h-[300px] md:h-[360px]">
+      <div className="p-2 md:p-4 flex flex-col h-[320px] md:h-[380px]">
         {product.discountPercentage && (
           <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
             {product.discountPercentage}% off
           </div>
         )}
 
-        <div className="relative w-full h-28 md:h-48 mb-3 overflow-hidden rounded-lg">
+        {/* Increased image height */}
+        <div className="relative w-full h-40 md:h-64 mb-3 overflow-hidden rounded-lg">
           <Image
             src={product.imageUrls ? product.imageUrls[0] : "/placeholder.jpg"}
             alt={product.name}
@@ -127,11 +128,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="relative flex flex-col flex-grow transition-opacity duration-300">
-          <h3 className="text-gray-800 font-medium text-lg mb-1 line-clamp-2 min-h-[3.5rem]">
+          <h3 className="text-gray-800 font-medium text-lg mb-1 line-clamp-2">
             {product.name}
           </h3>
 
-          <div className="flex items-center gap-2 mb-1 h-7">
+          <div className="flex items-center gap-2 mb-2 h-7">
             <span className="text-gray-900 font-bold text-xl">
               ₹{product.price}
             </span>
@@ -140,18 +141,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 ₹{product.originalPrice}
               </span>
             )}
-          </div>
-
-          <div className="flex items-center gap-1 mb-2 h-6">
-            {[...Array(5)].map((_, index) => (
-              <span
-                key={index}
-                className={index < 4 ? "text-yellow-400" : "text-gray-300"}
-              >
-                ★
-              </span>
-            ))}
-            <span className="text-gray-500 text-sm ml-2">2</span>
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 mt-auto">
@@ -169,9 +158,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
               ) : (
                 <>
                   <ShoppingCart size={16} />
-                  {quantityInCart > 0
+                  {/* {quantityInCart > 0
                     ? `Add (${quantityInCart} in cart)`
-                    : "Add to cart"}
+                    : "Add to cart"} */}
+                  Add to cart
                 </>
               )}
             </button>

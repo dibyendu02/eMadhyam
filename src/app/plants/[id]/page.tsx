@@ -49,7 +49,7 @@ const ProductPage = () => {
       {relatedProducts.length > 0 && (
         <RelatedProducts products={relatedProducts} />
       )}
-      <WhatsAppButton phoneNumber="919641131615" />
+      <WhatsAppButton phoneNumber="919564259220" />
       <BottomNavbar />
       <Footer />
     </div>

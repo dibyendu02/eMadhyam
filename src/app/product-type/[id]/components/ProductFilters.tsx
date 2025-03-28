@@ -18,9 +18,7 @@ const ProductFilters: React.FC<FilterProps> = ({
   selectedFilters,
   onClearFilters,
 }) => {
-  const { colors, plantTypes, loading } = useAppSelector(
-    (state) => state.common
-  );
+  const { colors, loading } = useAppSelector((state) => state.common);
 
   if (loading) {
     return (
@@ -99,7 +97,7 @@ const ProductFilters: React.FC<FilterProps> = ({
         </div>
 
         {/* Plant Type Filter */}
-        <div>
+        {/* <div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Plant Type</h3>
           <div className="space-y-2">
             {plantTypes.map((type) => (
@@ -114,7 +112,7 @@ const ProductFilters: React.FC<FilterProps> = ({
               </label>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Color Filter */}
         <div>

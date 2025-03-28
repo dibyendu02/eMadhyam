@@ -1,13 +1,11 @@
-// src/app/product-types/[id]/page.tsx
-
 "use client";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import { PriceRange } from "@/commons/constants";
 import Footer from "@/components/footer/Footer";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState, useRef } from "react";
 import MobileFilterDrawer from "./components/MobileFilterDrawer";
 import ProductFilters from "./components/ProductFilters";
 import ProductGrid from "./components/ProductGrid";
@@ -16,7 +14,10 @@ import {
   fetchPlantTypes,
   fetchProductTypes,
 } from "@/store/slices/commonSlice";
-import { fetchProductsByProductType } from "@/store/slices/productSlice";
+import {
+  fetchProductsByProductType,
+  clearTypeProducts,
+} from "@/store/slices/productSlice";
 import ProductTypeHeader from "./components/ProductTypeHeader";
 
 export interface FilterState {
@@ -42,8 +43,11 @@ const createSlugFromName = (name: string) => {
 const ProductTypePage = () => {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const params = useParams();
-  const router = useRouter();
+  // const router = useRouter();
   const productTypeSlug = params.id as string;
+
+  // Use ref to track if we've already initiated the fetch to prevent multiple calls
+  const hasFetchedProducts = useRef(false);
 
   const { productTypes, loading: typesLoading } = useAppSelector(
     (state) => state.common
@@ -67,12 +71,67 @@ const ProductTypePage = () => {
   const [selectedFilters, setSelectedFilters] =
     useState<FilterState>(defaultFilters);
 
+  // Clear products and reset fetch flag when the slug changes
+  useEffect(() => {
+    dispatch(clearTypeProducts());
+    hasFetchedProducts.current = false;
+
+    return () => {
+      dispatch(clearTypeProducts());
+    };
+  }, [dispatch, productTypeSlug]);
+
+  // First fetch all product types if they're not already loaded
+  useEffect(() => {
+    if (productTypes.length === 0) {
+      dispatch(fetchProductTypes());
+    }
+  }, [dispatch, productTypes.length]);
+
+  // Once product types are loaded, find the one that matches our slug and fetch its products
+  useEffect(() => {
+    if (
+      productTypes.length > 0 &&
+      !typesLoading &&
+      !hasFetchedProducts.current
+    ) {
+      // Find the product type by slug or by generated slug from name
+      const productType = productTypes.find(
+        (type) =>
+          type.slug === productTypeSlug ||
+          createSlugFromName(type.name) === productTypeSlug
+      );
+
+      if (!productType) {
+        console.error(`Product type with slug "${productTypeSlug}" not found`);
+        return;
+      }
+
+      // Fetch related data for filters
+      dispatch(fetchColors());
+      dispatch(fetchPlantTypes());
+
+      // Ensure we have a valid ID string
+      const productTypeId = productType._id || productType.id;
+      if (productTypeId) {
+        dispatch(fetchProductsByProductType(productTypeId));
+        hasFetchedProducts.current = true;
+      } else {
+        console.error("Product type has no valid ID");
+      }
+    }
+  }, [dispatch, productTypes, productTypeSlug, typesLoading]);
+
   // Get filtered and sorted products
   const processedProducts = useMemo(() => {
-    let filtered = [...(typeProducts || [])];
+    // Ensure typeProducts is an array before trying to spread it
+    let filtered = Array.isArray(typeProducts) ? [...typeProducts] : [];
 
     // Apply filters
     filtered = filtered.filter((product) => {
+      // Ensure product and required properties exist
+      if (!product || !product.color) return false;
+
       // Color filter
       if (
         selectedFilters.colors.length > 0 &&
@@ -130,6 +189,22 @@ const ProductTypePage = () => {
     });
   }, [selectedFilters, currentSort, typeProducts]);
 
+  // Get the display name from the product type or format it from the slug
+  const displayName = useMemo(() => {
+    if (productTypes.length === 0)
+      return formatProductTypeName(productTypeSlug);
+
+    const productType = productTypes.find(
+      (type) =>
+        type.slug === productTypeSlug ||
+        createSlugFromName(type.name) === productTypeSlug
+    );
+
+    return productType
+      ? productType.name
+      : formatProductTypeName(productTypeSlug);
+  }, [productTypes, productTypeSlug]);
+
   const handleClearFilters = () => {
     setSelectedFilters(defaultFilters);
   };
@@ -180,59 +255,6 @@ const ProductTypePage = () => {
     setCurrentSort(sortValue);
   };
 
-  // First fetch all product types if they're not already loaded
-  useEffect(() => {
-    if (productTypes.length === 0) {
-      dispatch(fetchProductTypes());
-    }
-  }, [dispatch, productTypes.length]);
-
-  // Once product types are loaded, find the one that matches our slug and fetch its products
-  useEffect(() => {
-    if (productTypes.length > 0 && !typesLoading) {
-      // Find the product type by slug or by generated slug from name
-      let productType = productTypes.find(
-        (type) =>
-          type.slug === productTypeSlug ||
-          createSlugFromName(type.name) === productTypeSlug
-      );
-
-      if (!productType) {
-        console.error(`Product type with slug "${productTypeSlug}" not found`);
-        // You might want to redirect to a 404 page or handle this case differently
-        return;
-      }
-
-      // Fetch related data for filters
-      dispatch(fetchColors());
-      dispatch(fetchPlantTypes());
-
-      // Fix for TypeScript error: ensure we have a valid ID string
-      const productTypeId = productType._id || productType.id;
-      if (productTypeId) {
-        dispatch(fetchProductsByProductType(productTypeId));
-      } else {
-        console.error("Product type has no valid ID");
-      }
-    }
-  }, [dispatch, productTypes, productTypeSlug, typesLoading]);
-
-  // Get the display name from the product type or format it from the slug
-  const displayName = useMemo(() => {
-    if (productTypes.length === 0)
-      return formatProductTypeName(productTypeSlug);
-
-    const productType = productTypes.find(
-      (type) =>
-        type.slug === productTypeSlug ||
-        createSlugFromName(type.name) === productTypeSlug
-    );
-
-    return productType
-      ? productType.name
-      : formatProductTypeName(productTypeSlug);
-  }, [productTypes, productTypeSlug]);
-
   return (
     <div className="flex flex-col bg-white">
       <Navbar />
@@ -246,30 +268,51 @@ const ProductTypePage = () => {
       />
 
       <main className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Filters sidebar */}
-          <div className="hidden md:block flex-shrink-0">
-            <ProductFilters
+        {typesLoading ? (
+          <div className="w-full text-center py-8">
+            <p className="text-lg">Loading product types...</p>
+          </div>
+        ) : productsLoading ? (
+          <div className="w-full text-center py-8">
+            <p className="text-lg">Loading products...</p>
+          </div>
+        ) : (
+          <div className="flex gap-8">
+            {/* Filters sidebar */}
+            <div className="hidden md:block flex-shrink-0">
+              <ProductFilters
+                onFilterChange={handleFilterChange}
+                selectedFilters={selectedFilters}
+                onClearFilters={handleClearFilters}
+              />
+            </div>
+
+            {/* Mobile filter drawer */}
+            <MobileFilterDrawer
+              isOpen={isFilterDrawerOpen}
+              onClose={() => setIsFilterDrawerOpen(false)}
               onFilterChange={handleFilterChange}
               selectedFilters={selectedFilters}
               onClearFilters={handleClearFilters}
             />
-          </div>
 
-          {/* Mobile filter drawer */}
-          <MobileFilterDrawer
-            isOpen={isFilterDrawerOpen}
-            onClose={() => setIsFilterDrawerOpen(false)}
-            onFilterChange={handleFilterChange}
-            selectedFilters={selectedFilters}
-            onClearFilters={handleClearFilters}
-          />
-
-          {/* Product grid */}
-          <div className="flex-1">
-            <ProductGrid products={processedProducts} />
+            {/* Product grid */}
+            <div className="flex-1">
+              {Array.isArray(typeProducts) && typeProducts.length > 0 ? (
+                <ProductGrid products={processedProducts} />
+              ) : (
+                <div className="text-center py-12">
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    No products found
+                  </h2>
+                  <p className="mt-2 text-gray-500">
+                    No products available for this product type.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>

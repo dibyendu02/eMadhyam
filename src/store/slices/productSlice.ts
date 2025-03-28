@@ -88,6 +88,9 @@ const productSlice = createSlice({
         state.currentProduct.isCodAvailable = isCodAvailable;
       }
     },
+    clearTypeProducts: (state) => {
+      state.typeProducts = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -145,6 +148,9 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearCurrentProduct, updateProductCodAvailability } =
-  productSlice.actions;
+export const {
+  clearTypeProducts,
+  clearCurrentProduct,
+  updateProductCodAvailability,
+} = productSlice.actions;
 export default productSlice.reducer;

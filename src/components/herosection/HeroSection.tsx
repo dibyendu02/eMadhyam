@@ -15,7 +15,7 @@ const HeroSection = () => {
   }
 
   return (
-    <div className="h-[50vh] md:h-[100vh] w-full relative overflow-hidden">
+    <div className="h-[45vh] md:h-[100vh] w-full relative overflow-hidden">
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent z-10" />
 

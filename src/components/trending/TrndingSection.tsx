@@ -20,7 +20,7 @@ const TrendingSection: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-gradient-to-b from-white to-gray-50 md:py-16">
+    <div className="w-full bg-gradient-to-b from-white to-gray-50 py-5 md:py-16 ">
       <div className="max-w-7xl mx-auto px-4">
         <div className="hidden md:block mb-10 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -34,7 +34,7 @@ const TrendingSection: React.FC = () => {
 
         {/* Products Grid with Animation */}
         {loading ? (
-          <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 ">
             {new Array(4).fill(0).map((_, index) => (
               <div key={index} className="opacity-1">
                 <ProductCardLoading />

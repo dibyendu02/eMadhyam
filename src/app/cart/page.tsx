@@ -232,7 +232,7 @@ const CartPage = () => {
         </div>
       </div>
       <Footer />
-      <WhatsAppButton phoneNumber="919641131615" />
+      <WhatsAppButton phoneNumber="919564259220" />
       <BottomNavbar />
     </div>
   );

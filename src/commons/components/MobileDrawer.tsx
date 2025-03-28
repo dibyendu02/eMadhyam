@@ -1,5 +1,5 @@
 // MobileDrawer.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import AppIcons from "../../../public/icons/appIcons";
@@ -8,30 +8,44 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/api/authService";
 import { logout } from "@/store/slices/userSlice";
+import { fetchProductTypes } from "@/store/slices/commonSlice";
+
+// Helper function to create slug from name
+const createSlugFromName = (name: string) => {
+  return name.toLowerCase().replace(/\s+/g, "-");
+};
 
 interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  menuItems: Array<{
+  menuItems?: Array<{
     id: string;
     label: string;
     count: string;
   }>;
 }
 
-const MobileDrawer: React.FC<MobileDrawerProps> = ({
-  isOpen,
-  onClose,
-  // menuItems,
-}) => {
+const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) => {
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const router = useRouter();
   const currentUser = useAppSelector((state) => state.user.user);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
 
+  const { productTypes, loading: typesLoading } = useAppSelector(
+    (state) => state.common
+  );
+
+  // Fetch product types when the drawer opens if they're not already loaded
+  useEffect(() => {
+    if (isOpen && productTypes.length === 0 && !typesLoading) {
+      dispatch(fetchProductTypes());
+    }
+  }, [dispatch, isOpen, productTypes.length, typesLoading]);
+
   const handleWishListButtonClick = () => {
     router.push(`/wishlist`);
+    onClose();
   };
 
   const handleNavigate = (path: string) => {
@@ -43,6 +57,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
     AuthService.logout();
     dispatch(logout());
     router.push("/");
+    onClose();
   };
 
   return (
@@ -177,20 +192,42 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
               )}
             </div>
 
-            {/* Menu Items */}
-            {/* <div className="p-4">
-              {menuItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="mb-4 py-2 flex items-center justify-between hover:bg-gray-50 rounded-lg px-2 cursor-pointer"
-                >
-                  <span className="text-gray-700">{item.label}</span>
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                    {item.count}
-                  </span>
-                </div>
-              ))}
-            </div> */}
+            {/* Product Types Section */}
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-medium text-gray-900 mb-3">Product Types</h3>
+              {typesLoading ? (
+                // Loading skeleton
+                Array(4)
+                  .fill(0)
+                  .map((_, index) => (
+                    <div
+                      key={`loading-${index}`}
+                      className="h-10 bg-gray-100 rounded mb-2 animate-pulse"
+                    ></div>
+                  ))
+              ) : productTypes.length > 0 ? (
+                // Product types list
+                productTypes.map((type) => (
+                  <div
+                    key={type._id || type.id}
+                    className="mb-2 py-2 flex items-center justify-between hover:bg-gray-50 rounded-lg px-2 cursor-pointer"
+                    onClick={() =>
+                      handleNavigate(
+                        `/product-type/${
+                          type.slug || createSlugFromName(type.name)
+                        }`
+                      )
+                    }
+                  >
+                    <span className="text-gray-700">{type.name}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  No product types available
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
