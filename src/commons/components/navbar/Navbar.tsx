@@ -92,9 +92,13 @@ const Navbar = () => {
             <Image
               src={AppIcons.cartIcon}
               alt="cart"
-              className="w-6 h-6"
+              className="w-6 h-6  text-orange-500"
               height={2}
               width={2}
+              style={{
+                filter:
+                  "invert(60%) sepia(90%) saturate(1000%) hue-rotate(360deg) brightness(100%) contrast(100%)",
+              }}
             />
             {cartTotalQuantity > 0 && (
               <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">

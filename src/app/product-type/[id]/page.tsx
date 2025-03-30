@@ -130,12 +130,12 @@ const ProductTypePage = () => {
     // Apply filters
     filtered = filtered.filter((product) => {
       // Ensure product and required properties exist
-      if (!product || !product.color) return false;
+      if (!product) return false;
 
       // Color filter
       if (
         selectedFilters.colors.length > 0 &&
-        !selectedFilters.colors.includes(product.color.name)
+        !selectedFilters.colors.includes(product?.color?.name)
       ) {
         return false;
       }
@@ -297,7 +297,7 @@ const ProductTypePage = () => {
             />
 
             {/* Product grid */}
-            <div className="flex-1">
+            <div className="flex-1 overflow-x-auto">
               {Array.isArray(typeProducts) && typeProducts.length > 0 ? (
                 <ProductGrid products={processedProducts} />
               ) : (
