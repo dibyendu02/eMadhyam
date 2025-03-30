@@ -9,6 +9,14 @@ export interface ProductCardProps {
   className?: string;
 }
 
+export interface FilterState {
+  colors: string[];
+  plantTypes: string[];
+  seasons: string[];
+  priceRange: number[];
+  inStock: boolean;
+}
+
 // types/product.ts
 export interface Product {
   _id: string;

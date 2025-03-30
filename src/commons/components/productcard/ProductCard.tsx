@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleNavigate = (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest("button")) {
-      router.push(`/plants/${product._id}`);
+      router.push(`/product/${product._id}`);
     }
   };
 

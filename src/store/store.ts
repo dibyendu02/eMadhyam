@@ -7,6 +7,7 @@ import productReducer from "./slices/productSlice";
 import categoryReducer from "./slices/categorySlice";
 import commonReducer from "./slices/commonSlice";
 import bannerReducer from "./slices/bannerSlice";
+import searchReducer from "./slices/searchSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     categories: categoryReducer,
     common: commonReducer,
     banners: bannerReducer,
+    search: searchReducer,
   },
 });
 

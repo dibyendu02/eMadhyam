@@ -85,4 +85,42 @@ export class ProductService {
       throw new Error("Network error occurred");
     }
   }
+
+  static async searchProducts(query: string): Promise<Product[]> {
+    try {
+      // First try to get products by name/description search
+      const response = await axiosInstance.get<Product[]>(`/api/product`);
+
+      // Client-side filtering since we don't have a dedicated search endpoint
+      const searchResults = response.data.filter((product) => {
+        const lowerCaseQuery = query.toLowerCase();
+
+        // Search in multiple fields
+        return (
+          product.name.toLowerCase().includes(lowerCaseQuery) ||
+          (product.shortDescription?.toLowerCase() || "").includes(
+            lowerCaseQuery
+          ) ||
+          (product.category?.name?.toLowerCase() || "").includes(
+            lowerCaseQuery
+          ) ||
+          (product.productType?.name?.toLowerCase() || "").includes(
+            lowerCaseQuery
+          ) ||
+          (product.plantType?.name?.toLowerCase() || "").includes(
+            lowerCaseQuery
+          )
+        );
+      });
+
+      return searchResults;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(error.response.data.error || "Search failed");
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
 }
