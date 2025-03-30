@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/commons/components/navbar/Navbar";
 import SubHeader from "@/commons/components/subheader/SubHeader";
 import Footer from "@/components/footer/Footer";
@@ -9,7 +10,7 @@ import { Product } from "@/commons/types/product";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchProducts } from "@/store/slices/productSlice";
 import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
-import { PriceRange, ProductSeason } from "@/commons/constants";
+import { PriceRange } from "@/commons/constants";
 import {
   fetchColors,
   fetchPlantTypes,
@@ -28,15 +29,25 @@ export interface FilterState {
   inStock: boolean;
 }
 
-const SearchResultsPage = () => {
+// Loading component to show during suspense
+const SearchPageLoading = () => (
+  <div className="bg-white min-h-screen flex items-center justify-center">
+    <div className="animate-pulse text-center">
+      <div className="w-12 h-12 border-4 border-gray-300 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading search results...</p>
+    </div>
+  </div>
+);
+
+// Component that uses useSearchParams must be wrapped in Suspense
+const SearchContent = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const dispatch = useAppDispatch();
 
-  // Access products and categories from Redux store
+  // Access products from Redux store
   const allProducts = useAppSelector((state) => state.products.items);
   const loading = useAppSelector((state) => state.products.loading);
-  const { colors } = useAppSelector((state) => state.common);
 
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -103,7 +114,7 @@ const SearchResultsPage = () => {
       );
     }
 
-    // Apply season filter - Fixed to handle ProductSeason properly
+    // Apply season filter
     if (filters.seasons.length > 0) {
       filteredProducts = filteredProducts.filter((product) =>
         filters.seasons.includes(product.season || "All")
@@ -149,17 +160,43 @@ const SearchResultsPage = () => {
         newFilters.inStock = value;
       } else if (typeof value === "string") {
         // Handle array-based filters (colors, seasons)
-        const arrayValue = value as string;
-        const currentArray = newFilters[filterType] as string[];
+        const arrayValue = value;
 
-        if (currentArray.includes(arrayValue)) {
-          // Remove value if already selected
-          newFilters[filterType] = currentArray.filter(
-            (item) => item !== arrayValue
-          ) as any;
-        } else {
-          // Add value if not selected
-          newFilters[filterType] = [...currentArray, arrayValue] as any;
+        if (
+          filterType === "colors" ||
+          filterType === "seasons" ||
+          filterType === "plantTypes"
+        ) {
+          const currentArray = newFilters[filterType] as string[];
+
+          if (currentArray.includes(arrayValue)) {
+            // Remove value if already selected
+            if (filterType === "colors") {
+              newFilters.colors = currentArray.filter(
+                (item) => item !== arrayValue
+              );
+            } else if (filterType === "seasons") {
+              newFilters.seasons = currentArray.filter(
+                (item) => item !== arrayValue
+              );
+            } else if (filterType === "plantTypes" && newFilters.plantTypes) {
+              newFilters.plantTypes = currentArray.filter(
+                (item) => item !== arrayValue
+              );
+            }
+          } else {
+            // Add value if not selected
+            if (filterType === "colors") {
+              newFilters.colors = [...currentArray, arrayValue];
+            } else if (filterType === "seasons") {
+              newFilters.seasons = [...currentArray, arrayValue];
+            } else if (filterType === "plantTypes") {
+              newFilters.plantTypes = [
+                ...(newFilters.plantTypes || []),
+                arrayValue,
+              ];
+            }
+          }
         }
       }
 
@@ -178,10 +215,7 @@ const SearchResultsPage = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
-      <Navbar />
-      <SubHeader />
-
+    <>
       {/* Product Type Header with search info */}
       <ProductTypeHeader
         productTypeName={`Search results for "${query}"`}
@@ -230,15 +264,15 @@ const SearchResultsPage = () => {
                   No products found
                 </h2>
                 <p className="text-gray-500 max-w-md mx-auto mb-6">
-                  We couldn't find any products that match your search. Try
+                  We couldn&apos;t find any products that match your search. Try
                   using different keywords or browse our categories.
                 </p>
-                <a
+                <Link
                   href="/"
                   className="inline-block py-2 px-6 bg-green-600 text-white rounded-lg font-medium"
                 >
                   Return to Homepage
-                </a>
+                </Link>
               </div>
             )}
           </div>
@@ -253,6 +287,20 @@ const SearchResultsPage = () => {
         selectedFilters={filters}
         onClearFilters={handleClearFilters}
       />
+    </>
+  );
+};
+
+// Main page component that wraps SearchContent with Suspense
+const SearchResultsPage = () => {
+  return (
+    <div className="bg-white min-h-screen">
+      <Navbar />
+      <SubHeader />
+
+      <Suspense fallback={<SearchPageLoading />}>
+        <SearchContent />
+      </Suspense>
 
       <Footer />
       <WhatsAppButton phoneNumber="919564259220" />
