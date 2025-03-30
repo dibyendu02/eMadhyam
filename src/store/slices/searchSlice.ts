@@ -19,17 +19,23 @@ const initialState: SearchState = {
 };
 
 // Create the async thunk for searching products
-export const searchProducts = createAsyncThunk(
-  "search/searchProducts",
-  async (query: string, { rejectWithValue }) => {
-    try {
-      const response = await ProductService.searchProducts(query);
-      return response;
-    } catch (error: any) {
+export const searchProducts = createAsyncThunk<
+  Product[],
+  string,
+  {
+    rejectValue: string;
+  }
+>("search/searchProducts", async (query: string, { rejectWithValue }) => {
+  try {
+    const response = await ProductService.searchProducts(query);
+    return response;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
       return rejectWithValue(error.message || "Failed to search products");
     }
+    return rejectWithValue("Failed to search products");
   }
-);
+});
 
 // Create the search slice
 const searchSlice = createSlice({

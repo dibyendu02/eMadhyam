@@ -8,7 +8,7 @@ const BottomNavbar = () => {
   const [isHelpDrawerOpen, setIsHelpDrawerOpen] = useState(false);
 
   // Check if the current path matches to apply active styling
-  const isActive = (path: any) => {
+  const isActive = (path: string) => {
     return pathname === path;
   };
 

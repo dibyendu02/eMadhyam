@@ -19,14 +19,14 @@ const Navbar = () => {
 
   // Access products from the correct Redux state path
   const allProducts = useAppSelector((state) => state.products.items);
-  const categories = useAppSelector((state) => state.categories.items);
+  // Removed unused categories variable
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  // Removed unused isSearching variable
 
   const profileDropdownRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -121,8 +121,6 @@ const Navbar = () => {
       return;
     }
 
-    setIsSearching(true);
-
     try {
       // Use the products from Redux store for frontend filtering
       const lowerCaseQuery = query.toLowerCase();
@@ -144,8 +142,6 @@ const Navbar = () => {
       setSearchResults(localResults.slice(0, 5));
     } catch (error) {
       console.error("Search error:", error);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -190,7 +186,7 @@ const Navbar = () => {
             <input
               type="text"
               placeholder="Search for plants, pots, and more..."
-              className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900" // Added text-gray-900 for visible text
+              className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
               value={searchQuery}
               onChange={handleSearchInputChange}
               ref={searchInputRef}
@@ -222,9 +218,11 @@ const Navbar = () => {
                     >
                       {product.imageUrls?.[0] && (
                         <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
-                          <img
+                          <Image
                             src={product.imageUrls[0]}
                             alt={product.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -266,7 +264,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900" // Added text-gray-900
+                className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
                 ref={searchInputRef}
@@ -296,9 +294,11 @@ const Navbar = () => {
                       >
                         {product.imageUrls?.[0] && (
                           <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
-                            <img
+                            <Image
                               src={product.imageUrls[0]}
                               alt={product.name}
+                              width={48}
+                              height={48}
                               className="w-full h-full object-cover"
                             />
                           </div>
