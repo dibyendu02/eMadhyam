@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  // const currentYear = new Date().getFullYear();
 
   return (
     <div className="bg-[#24670D] text-white ">
@@ -105,20 +105,20 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:+91-1234567891"
+                  href="tel:+919564889589"
                   className="flex items-center gap-2 text-white/80 hover:text-white transition-colors duration-200 text-sm"
                 >
                   <Phone size={16} />
-                  <span>+91-1234567891</span>
+                  <span>+91-9564889589</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:support@logo.com"
+                  href="mailto:help@emadhyam.com"
                   className="flex items-center gap-2 text-white/80 hover:text-white transition-colors duration-200 text-sm"
                 >
                   <Mail size={16} />
-                  <span>support@logo.com</span>
+                  <span>help@emadhyam.com</span>
                 </a>
               </li>
             </ul>
@@ -127,10 +127,10 @@ const Footer = () => {
       </div>
 
       {/* Copyright Bar */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-white/10 mb-10 md:mb-0">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <p className="text-center text-white/60 text-sm">
-            Copyright © All right reserve to Nursery website 2020-{currentYear}
+            Copyright © All right reserve to eMadhyam 2025
           </p>
         </div>
       </div>

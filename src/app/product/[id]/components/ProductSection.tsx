@@ -1,17 +1,18 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToCartAsync } from "@/store/slices/cartSlice";
-import { Check, X } from "lucide-react";
+import { Check, Share2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductSectionLoading from "./ProductSectionLoading";
 import toast from "react-hot-toast";
 
 const ProductSection: React.FC = ({}) => {
   const [quantity, setQuantity] = useState(1);
-  // const [selectedSize, setSelectedSize] = useState("Medium");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState("");
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { user } = useAppSelector((state) => state.user);
@@ -22,6 +23,13 @@ const ProductSection: React.FC = ({}) => {
 
   const cartItems = useAppSelector((state) => state.cart.items);
   const isInCart = cartItems.some((item) => item._id === currentProduct?._id);
+
+  // Get current URL when component mounts
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
 
   const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -57,9 +65,7 @@ const ProductSection: React.FC = ({}) => {
   };
 
   const handleBuyNowClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("handleBuyNowClick clicked");
     e.stopPropagation();
-    console.log("Buy now clicked");
 
     if (!user?._id) {
       toast.error("Please login to continue.", {
@@ -77,8 +83,53 @@ const ProductSection: React.FC = ({}) => {
           })
         ).unwrap();
     }
-    console.log("Add to cart action dispatched");
     router.push(`/cart`);
+  };
+
+  const handleShare = () => {
+    setIsShareModalOpen(true);
+  };
+
+  const handleShareToSocial = (platform: string) => {
+    let shareUrl = "";
+    const text = `Check out ${currentProduct?.name} on our store!`;
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          currentUrl
+        )}`;
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+          currentUrl
+        )}&text=${encodeURIComponent(text)}`;
+        break;
+      case "whatsapp":
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+          text + " " + currentUrl
+        )}`;
+        break;
+      case "telegram":
+        shareUrl = `https://t.me/share/url?url=${encodeURIComponent(
+          currentUrl
+        )}&text=${encodeURIComponent(text)}`;
+        break;
+      case "copy":
+        navigator.clipboard
+          .writeText(currentUrl)
+          .then(() => {
+            toast.success("Link copied to clipboard!");
+            setIsShareModalOpen(false);
+          })
+          .catch(() => {
+            toast.error("Failed to copy link");
+          });
+        return;
+    }
+
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
+    setIsShareModalOpen(false);
   };
 
   // Show loading state during initial load or when loading flag is true
@@ -215,26 +266,6 @@ const ProductSection: React.FC = ({}) => {
             </span>
           </div>
 
-          {/* Size Selector */}
-          {/* <div className="space-y-2">
-            <p className="font-medium text-gray-900">Select Plant Size</p>
-            <div className="flex space-x-2">
-              {["Small", "Medium", "Large"].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-4 py-2 rounded border ${
-                    selectedSize === size
-                      ? "border-green-600 text-green-600 bg-green-50"
-                      : "border-gray-200 text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div> */}
-
           {/* Stock Status */}
           <div className="flex items-center space-x-2 text-green-600">
             {currentProduct?.inStock ? (
@@ -279,22 +310,100 @@ const ProductSection: React.FC = ({}) => {
           </div>
 
           {/* Add to Cart and Buy Now */}
-          <button
-            className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
-            onClick={handleAddToCart}
-            disabled={!currentProduct?.inStock}
-          >
-            {isInCart ? "Go to Cart" : "Add to Cart"}
-          </button>
-          <button
-            className="w-full border border-gray-200 py-3 rounded text-gray-700 hover:bg-gray-50"
-            onClick={handleBuyNowClick}
-            disabled={!currentProduct?.inStock}
-          >
-            Buy Now
-          </button>
+          <div className="grid grid-cols-1 gap-3">
+            <button
+              className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
+              onClick={handleAddToCart}
+              disabled={!currentProduct?.inStock}
+            >
+              {isInCart ? "Go to Cart" : "Add to Cart"}
+            </button>
+
+            {/* Share Button */}
+            <button
+              className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded text-gray-700 hover:bg-gray-50"
+              onClick={handleShare}
+            >
+              <Share2 className="w-5 h-5" />
+              Share
+            </button>
+
+            <button
+              className="w-full border border-gray-200 py-3 rounded text-white hover:bg-orange-500 bg-orange-400"
+              onClick={handleBuyNowClick}
+              disabled={!currentProduct?.inStock}
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md mx-4 p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Share this product
+              </h3>
+              <button
+                onClick={() => setIsShareModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => handleShareToSocial("facebook")}
+                className="flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <span>Facebook</span>
+              </button>
+
+              <button
+                onClick={() => handleShareToSocial("twitter")}
+                className="flex items-center justify-center gap-2 p-3 rounded-lg bg-sky-500 text-white hover:bg-sky-600"
+              >
+                <span>Twitter</span>
+              </button>
+
+              <button
+                onClick={() => handleShareToSocial("whatsapp")}
+                className="flex items-center justify-center gap-2 p-3 rounded-lg bg-green-500 text-white hover:bg-green-600"
+              >
+                <span>WhatsApp</span>
+              </button>
+
+              <button
+                onClick={() => handleShareToSocial("telegram")}
+                className="flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+              >
+                <span>Telegram</span>
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex">
+                <input
+                  type="text"
+                  value={currentUrl}
+                  readOnly
+                  className="flex-1 border border-r-0 rounded-l-md px-4 py-2 text-sm bg-gray-50 text-gray-900"
+                />
+                <button
+                  onClick={() => handleShareToSocial("copy")}
+                  className="bg-gray-100 border border-l-0 rounded-r-md px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

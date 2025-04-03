@@ -166,7 +166,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between p-4 h-16 flex-1">
         {/* Mobile menu button */}
         <button className="md:hidden p-2" onClick={() => setIsDrawerOpen(true)}>
-          <Menu className="w-6 h-6 text-gray-700" />
+          <Menu className="w-6 h-6 text-black" />
         </button>
 
         {/* Logo */}
@@ -174,8 +174,8 @@ const Navbar = () => {
           <Image
             src="/logo.png"
             alt="logo"
-            width={100}
-            height={100}
+            width={150}
+            height={150}
             className={showSearchBar ? "hidden md:block" : ""}
           />
         </Link>
@@ -195,7 +195,7 @@ const Navbar = () => {
               type="submit"
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-5 h-5 text-black" />
             </button>
           </form>
 
@@ -274,7 +274,7 @@ const Navbar = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 onClick={toggleSearchBar}
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-black" />
               </button>
             </form>
 

@@ -81,7 +81,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) => {
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <Image src="/logo.png" alt="logo" width={80} height={80} />
             <button onClick={onClose} className="p-2">
-              <X className="w-6 h-6" />
+              <X className="w-6 h-6 text-black" />
             </button>
           </div>
 

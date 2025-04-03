@@ -107,10 +107,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onClick={handleNavigate}
     >
       <div className="p-2 md:p-4 flex flex-col h-[320px] md:h-[380px]">
-        {product.discountPercentage && (
+        {product.isTrending ? (
           <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-            {product.discountPercentage}% off
+            trending
           </div>
+        ) : (
+          product.discountPercentage && (
+            <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+              {product.discountPercentage}% off
+            </div>
+          )
         )}
 
         {/* Increased image height */}
