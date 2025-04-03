@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { Home, Package, HelpCircle, User, Mail, Phone, X } from "lucide-react";
 
 const BottomNavbar = () => {
