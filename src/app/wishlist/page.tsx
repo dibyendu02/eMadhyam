@@ -90,7 +90,7 @@ const WishlistPage = () => {
           </div>
         )}
       </div>
-      <WhatsAppButton phoneNumber="919564259220" />
+      <WhatsAppButton />
       <BottomNavbar />
       <Footer />
     </div>

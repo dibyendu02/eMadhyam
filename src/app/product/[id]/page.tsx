@@ -37,7 +37,9 @@ const ProductPage = () => {
   }, [dispatch, productId]);
 
   const relatedProducts = allProducts
-    .filter((product) => product.category._id === currentProduct?.category._id)
+    .filter(
+      (product) => product.category?._id === currentProduct?.category?._id
+    )
     .filter((product) => product._id !== productId);
 
   return (
@@ -49,7 +51,7 @@ const ProductPage = () => {
       {relatedProducts.length > 0 && (
         <RelatedProducts products={relatedProducts} />
       )}
-      <WhatsAppButton phoneNumber="919564259220" />
+      <WhatsAppButton />
       <BottomNavbar />
       <Footer />
     </div>

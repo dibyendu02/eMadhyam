@@ -33,7 +33,7 @@ const ProfilePage = () => {
           )}
         </div>
       </main>
-      <WhatsAppButton phoneNumber="919564259220" />
+      <WhatsAppButton />
       <BottomNavbar />
       <Footer />
     </div>

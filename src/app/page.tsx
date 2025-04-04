@@ -38,7 +38,7 @@ const App: React.FC = () => {
       <SaleBanner />
       <BestsellerSection />
       <Footer />
-      <WhatsAppButton phoneNumber="919564259220" />
+      <WhatsAppButton />
       <BottomNavbar />
     </div>
   );

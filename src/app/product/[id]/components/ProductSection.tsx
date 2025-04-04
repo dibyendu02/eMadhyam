@@ -165,7 +165,7 @@ const ProductSection: React.FC = ({}) => {
           Home
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-900">{currentProduct?.category.name} </span>
+        <span className="text-gray-900">{currentProduct?.category?.name} </span>
         <span className="mx-2">/</span>
         <span className="text-gray-900">{currentProduct?.name} </span>
       </nav>

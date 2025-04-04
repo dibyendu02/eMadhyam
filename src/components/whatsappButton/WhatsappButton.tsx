@@ -2,12 +2,12 @@ import React from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
 interface WhatsAppButtonProps {
-  phoneNumber: string; // Phone number with country code (e.g., "911234567890")
-  message?: string; // Optional pre-filled message
+  phoneNumber?: string;
+  message?: string;
 }
 
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
-  phoneNumber,
+  phoneNumber = "919564889589",
   message = "Hello! I'm interested in your products.",
 }) => {
   // Create WhatsApp URL
