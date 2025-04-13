@@ -121,9 +121,12 @@ const CollectionsGrid: React.FC<CollectionsGridProps> = ({
       {/* Collection Grid */}
       <div className="relative">
         {/* Mobile Scrollable Container */}
-        <div className="no-scrollbar -mx-4 flex gap-12 md:gap-12 overflow-x-auto px-4 md:px-0 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-x-visible">
+        <div className="no-scrollbar -mx-4 flex gap-12 md:gap-12 overflow-x-auto px-4 ">
           {filteredCollections.map((collection) => (
-            <div key={collection.id} className="flex-shrink-0 sm:w-full">
+            <div
+              key={collection.id}
+              className="flex-shrink-0 sm:w-full md:w-1/5"
+            >
               <CollectionCard collection={collection} />
             </div>
           ))}

@@ -11,7 +11,7 @@ const HeroSection = () => {
   const { mainBanner } = useAppSelector((state) => state.banners);
 
   function handleClick(): void {
-    navigate.push("/collections/outdoor-plant");
+    navigate.push("/collections/indoor-plant");
   }
 
   return (
@@ -30,9 +30,9 @@ const HeroSection = () => {
       />
 
       {/* Content Container */}
-      <div className="absolute inset-0 flex items-center z-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8  pt-20 md:pt-0">
-          <div className="max-w-2xl space-y-8 animate-slide-up">
+      <div className="absolute inset-0 flex justify-center items-center z-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8  pt-20 md:pt-40">
+          <div className="w-full flex  justify-center animate-slide-up">
             {/*             
             <h1 className="text-white text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight">
               A Revolution
@@ -46,13 +46,13 @@ const HeroSection = () => {
             </p> */}
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-4 ">
               <Button
                 isSolid={true}
                 title="Shop Now"
                 onClick={handleClick}
                 color="primary"
-                className="text-lg px-10 py-3 shadow-lg hover:shadow-green-500/20"
+                className="text-lg px-10 py-2 md:px-12 md:py-3  shadow-lg hover:shadow-green-500/20"
               />
               {/* <Button
                 isSolid={false}
