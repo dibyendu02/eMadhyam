@@ -30,9 +30,9 @@ const HeroSection = () => {
       />
 
       {/* Content Container */}
-      <div className="absolute inset-0 flex justify-center items-center z-20">
+      <div className="absolute inset-0  z-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8  pt-20 md:pt-40">
-          <div className="w-full flex  justify-center animate-slide-up">
+          <div className="w-full pt-20 animate-slide-up">
             {/*             
             <h1 className="text-white text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight">
               A Revolution

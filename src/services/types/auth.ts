@@ -1,7 +1,7 @@
 import { IUser } from "@/commons/types/profile";
 
 export interface LoginCredentials {
-  email: string;
+  identifier: string;
   password: string;
 }
 

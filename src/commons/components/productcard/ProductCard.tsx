@@ -43,6 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation();
 
     if (!user?._id) {
+      router.push("/auth/signin");
       toast.error("Please login to add to cart.", { duration: 2000 });
       return;
     }
@@ -74,6 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation();
 
     if (!user?._id) {
+      router.push("/auth/signin");
       toast.error("Please login to manage your wishlist.", { duration: 2000 });
       return;
     }

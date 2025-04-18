@@ -15,14 +15,14 @@ const SignUp: React.FC = () => {
   const dispatch = useAppDispatch();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setSelectedFile(file);
+      // setSelectedFile(file);
       // Create preview URL
       const fileUrl = URL.createObjectURL(file);
       setPreviewUrl(fileUrl);
@@ -64,10 +64,12 @@ const SignUp: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!selectedFile) {
-      setError("Please select a profile image");
-      return;
-    }
+    //image optional
+
+    // if (!selectedFile) {
+    //   setError("Please select a profile image");
+    //   return;
+    // }
 
     const formData = new FormData(event.currentTarget);
 
@@ -154,7 +156,6 @@ const SignUp: React.FC = () => {
                 <input
                   type="email"
                   name="email"
-                  required
                   disabled={isLoading}
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Email address"

@@ -63,7 +63,7 @@ const SignIn: React.FC = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const credentials: LoginCredentials = {
-      email: formData.get("email") as string,
+      identifier: formData.get("identifier") as string,
       password: formData.get("password") as string,
     };
     loginUser(credentials);
@@ -91,12 +91,12 @@ const SignIn: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <input
-                  type="email"
-                  name="email"
+                  type="text"
+                  name="identifier"
                   required
                   disabled={isLoading}
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  placeholder="Enter your mail"
+                  placeholder="Enter your email or phone number"
                 />
               </div>
               <div>
