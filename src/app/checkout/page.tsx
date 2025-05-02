@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api/paymentService";
 import { loadRazorpay } from "@/services/config/razorpayUtils";
-import { addAddress, updateUser } from "@/store/slices/userSlice";
+import { updateUser } from "@/store/slices/userSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
