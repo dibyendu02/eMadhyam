@@ -35,6 +35,7 @@ const ProductSection: React.FC = ({}) => {
     e.stopPropagation();
 
     if (!user?._id) {
+      router.push("/auth/signin");
       toast.error("Please login to add to cart.", {
         duration: 2000,
       });
@@ -68,6 +69,7 @@ const ProductSection: React.FC = ({}) => {
     e.stopPropagation();
 
     if (!user?._id) {
+      router.push("/auth/signin");
       toast.error("Please login to continue.", {
         duration: 2000,
       });

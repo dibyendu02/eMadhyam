@@ -46,13 +46,13 @@ const HeroSection = () => {
             </p> */}
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 pt-4 ">
+            <div className="flex flex-wrap gap-4 pt-10">
               <Button
                 isSolid={true}
                 title="Shop Now"
                 onClick={handleClick}
                 color="primary"
-                className="text-lg px-10 py-2 md:px-12 md:py-3  shadow-lg hover:shadow-green-500/20"
+                className="text-lg px-10 py-2 md:px-12 md:py-3 shadow-lg hover:shadow-green-500/20"
               />
               {/* <Button
                 isSolid={false}
