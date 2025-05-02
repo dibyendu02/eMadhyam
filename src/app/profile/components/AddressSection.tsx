@@ -34,25 +34,28 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
         pinCode: formData.get("pinCode") as string,
       };
 
-      let updatedAddresses;
+      let updatedUser;
+
       if (editingAddress !== null) {
-        // Update existing address
-        updatedAddresses = addresses.map((addr, index) =>
-          index === editingAddress.index ? { ...addr, ...addressData } : addr
+        // Update existing address - send single address update
+        const updatedAddress = {
+          ...editingAddress.address,
+          ...addressData,
+        };
+
+        // Use the direct API endpoint for updating a specific address
+        updatedUser = await ProfileService.updateAddress(
+          user._id,
+          updatedAddress._id,
+          updatedAddress
         );
       } else {
-        // Add new address
-        updatedAddresses = [...addresses, addressData];
+        // Add new address using the new addAddress method
+        updatedUser = await ProfileService.addAddress(user._id, addressData);
       }
 
-      const apiFormData = new FormData();
-      apiFormData.append("address", JSON.stringify(updatedAddresses));
-
-      const response = await ProfileService.updateProfile(
-        user._id,
-        apiFormData
-      );
-      dispatch(updateUser(response.user));
+      // Update Redux store with the updated user data from the API
+      dispatch(updateUser(updatedUser));
 
       setShowForm(false);
       setEditingAddress(null);
@@ -69,20 +72,19 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
     setShowForm(true);
   };
 
-  const handleDelete = async (index: number) => {
+  const handleDelete = async (addressId: string) => {
     setIsLoading(true);
     setError("");
 
     try {
-      const updatedAddresses = addresses.filter((_, i) => i !== index);
-      const apiFormData = new FormData();
-      apiFormData.append("address", JSON.stringify(updatedAddresses));
-
-      const response = await ProfileService.updateProfile(
+      // Use the new deleteAddress method
+      const updatedUser = await ProfileService.deleteAddress(
         user._id,
-        apiFormData
+        addressId
       );
-      dispatch(updateUser(response.user));
+
+      // Update Redux store with the updated user data
+      dispatch(updateUser(updatedUser));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete address");
     } finally {
@@ -211,7 +213,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({
                 <Pencil className="h-4 w-4" />
               </button>
               <button
-                onClick={() => handleDelete(index)}
+                onClick={() => handleDelete(address._id)}
                 className="p-1 text-gray-600 hover:text-red-600 rounded-full bg-gray-200 hover:bg-red-50"
               >
                 <Trash2 className="h-4 w-4" />

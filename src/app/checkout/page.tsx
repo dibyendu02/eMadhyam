@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useEffect, useState } from "react";
 import { paymentService } from "@/services/api/paymentService";
 import { loadRazorpay } from "@/services/config/razorpayUtils";
-import { addAddress } from "@/store/slices/userSlice";
+import { addAddress, updateUser } from "@/store/slices/userSlice";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
@@ -16,6 +16,7 @@ import { IUser, IAddress } from "@/commons/types/profile";
 import { CartItem } from "@/commons/types/product";
 import WhatsAppButton from "@/components/whatsappButton/WhatsappButton";
 import BottomNavbar from "@/components/bottomNavbar/BottomNavbar";
+import { ProfileService } from "@/services/api/profileService";
 
 // Only define types not already in your type files
 interface AddressInput {
@@ -148,7 +149,7 @@ const CheckoutPage = () => {
 
         const { razorpayOrder } = orderResponse;
         const options: RazorpayOptions = {
-          key: "rzp_test_X7LgvyRx65km1S",
+          key: "rzp_live_usFO9oQZBmhM0l",
           amount: razorpayOrder.amount,
           currency: "INR",
           name: "Your Store",
@@ -202,25 +203,26 @@ const CheckoutPage = () => {
       newAddress.state &&
       newAddress.pinCode
     ) {
-      // Convert to the format expected by addAddress action
-      const addressToSave: IAddress = {
-        _id: "", // This will be assigned by the backend
-        addressLine: newAddress.addressLine,
-        city: newAddress.city,
-        state: newAddress.state,
-        pinCode: newAddress.pinCode,
-      };
-
       try {
-        // Dispatch the action to add the address
-        dispatch(addAddress(addressToSave));
+        // Create the address object
+        const addressToSave: Partial<IAddress> = {
+          addressLine: newAddress.addressLine,
+          city: newAddress.city,
+          state: newAddress.state,
+          pinCode: newAddress.pinCode,
+        };
 
-        // Get the current user from the store after dispatch
-        const currentUser = user;
-        const newIndex = currentUser.address.length;
+        // Add the address using the ProfileService
+        const updatedUser = await ProfileService.addAddress(
+          user._id,
+          addressToSave
+        );
 
-        // For newly added address, set the selected address index
-        setSelectedAddressIndex(newIndex);
+        // Update Redux store with the new user data
+        dispatch(updateUser(updatedUser));
+
+        // Set the selected address index to the last one (newly added)
+        setSelectedAddressIndex(updatedUser.address.length - 1);
 
         // Clear the form
         setNewAddress({
@@ -229,6 +231,9 @@ const CheckoutPage = () => {
           state: "",
           pinCode: "",
         });
+
+        // Reset selected address index to no longer show the form
+        setSelectedAddressIndex(updatedUser.address.length - 1);
 
         alert("Address saved successfully!");
       } catch (error) {
@@ -353,7 +358,7 @@ const CheckoutPage = () => {
                                     addressLine: e.target.value,
                                   })
                                 }
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full border border-gray-300 rounded-md p-2 text-gray-800"
                                 required
                               />
                             </div>
@@ -370,7 +375,7 @@ const CheckoutPage = () => {
                                     city: e.target.value,
                                   })
                                 }
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full border border-gray-300 rounded-md p-2 text-gray-800"
                                 required
                               />
                             </div>
@@ -387,7 +392,7 @@ const CheckoutPage = () => {
                                     state: e.target.value,
                                   })
                                 }
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full border border-gray-300 rounded-md p-2 text-gray-800"
                                 required
                               />
                             </div>
@@ -409,7 +414,7 @@ const CheckoutPage = () => {
                                     pinCode: numericValue,
                                   });
                                 }}
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full border border-gray-300 rounded-md p-2 text-gray-800"
                                 required
                               />
                             </div>

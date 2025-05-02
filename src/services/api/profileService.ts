@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
 import axiosInstance from "../config/axiosConfig";
 
-import { IUser } from "@/commons/types/profile";
+import { IAddress, IUser } from "@/commons/types/profile";
 import { updateProfileResponse } from "../types/auth";
 import { ApiError } from "../types/error";
 
@@ -128,6 +128,73 @@ export class ProfileService {
         if (error.response?.data) {
           throw new Error(
             error.response.data.error || "Failed to remove from wishlist"
+          );
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
+
+  // Method to add a new address
+  static async addAddress(
+    userId: string,
+    addressData: Partial<IAddress>
+  ): Promise<IUser> {
+    try {
+      const response = await axiosInstance.post(
+        `/api/user/address/${userId}`,
+        addressData
+      );
+      return response.data.user;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(error.response.data.error || "Failed to add address");
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
+
+  // Method to update an existing address
+  static async updateAddress(
+    userId: string,
+    addressId: string,
+    addressData: Partial<IAddress>
+  ): Promise<IUser> {
+    try {
+      const response = await axiosInstance.put(
+        `/api/user/address/${userId}/${addressId}`,
+        addressData
+      );
+      return response.data.user;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(
+            error.response.data.error || "Failed to update address"
+          );
+        }
+      }
+      throw new Error("Network error occurred");
+    }
+  }
+
+  // Method to delete an address
+  static async deleteAddress(
+    userId: string,
+    addressId: string
+  ): Promise<IUser> {
+    try {
+      const response = await axiosInstance.delete(
+        `/api/user/address/${userId}/${addressId}`
+      );
+      return response.data.user;
+    } catch (error) {
+      if (isAxiosError<ApiError>(error)) {
+        if (error.response?.data) {
+          throw new Error(
+            error.response.data.error || "Failed to delete address"
           );
         }
       }

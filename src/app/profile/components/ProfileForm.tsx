@@ -91,7 +91,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user }) => {
             type="email"
             name="email"
             defaultValue={user.email}
-            disabled
             className="w-full px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 rounded-md"
           />
         </div>
@@ -105,7 +104,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user }) => {
             name="phoneNumber"
             defaultValue={user.phoneNumber}
             required
-            disabled={isLoading}
+            disabled
             className="w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
         </div>
