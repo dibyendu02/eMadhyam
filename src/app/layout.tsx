@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     default: "eMadhyam",
     template: "%s | eMadhyam",
   },
+  description: "A one stop place for all your plant shopping needs",
   openGraph: {
     type: "website",
     locale: "en_US",

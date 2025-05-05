@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-export default function robot(): MetadataRoute.Robots {
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
@@ -9,13 +9,21 @@ export default function robot(): MetadataRoute.Robots {
       },
       {
         userAgent: "*",
-        disallow: "/auth",
+        disallow: "/auth/",
       },
       {
         userAgent: "*",
-        allow: "/product",
-        crawlDelay: 5,
+        disallow: "/api/",
+      },
+      {
+        userAgent: "*",
+        disallow: "/admin/",
+      },
+      {
+        userAgent: "*",
+        allow: "/product/",
       },
     ],
+    sitemap: "https://www.emadhyam.com/sitemap.xml",
   };
 }
